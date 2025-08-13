@@ -110,13 +110,13 @@ export default function DiscoverPage() {
   })
 
   return (
-    <div className="min-h-screen bg-cyan-50 p-4">
+    <div className="min-h-screen bg-amber-50 p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-cyan-800 mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-stone-600 hover:text-amber-800 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Takaisin etusivulle
@@ -124,29 +124,29 @@ export default function DiscoverPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 font-sans mb-2">Löydä naapureita</h1>
-              <p className="text-slate-600 leading-relaxed">Tutustu ihmisiin lähialueeltasi omaan tahtiisi</p>
+              <h1 className="text-3xl font-bold text-stone-800 font-sans mb-2">Löydä naapureita</h1>
+              <p className="text-stone-600 leading-relaxed">Tutustu ihmisiin lähialueeltasi omaan tahtiisi</p>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg border border-slate-200 p-4 mb-6">
+        <div className="bg-white rounded-lg border border-stone-200 p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="lg:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400 w-4 h-4" />
                 <Input
                   placeholder="Etsi nimellä, kiinnostuksilla..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 border-slate-300 focus:border-cyan-800 focus:ring-cyan-800"
+                  className="pl-10 border-stone-300 focus:border-amber-800 focus:ring-amber-800"
                 />
               </div>
             </div>
 
             <Select value={distanceFilter} onValueChange={setDistanceFilter}>
-              <SelectTrigger className="border-slate-300 focus:border-cyan-800 focus:ring-cyan-800">
+              <SelectTrigger className="border-stone-300 focus:border-amber-800 focus:ring-amber-800">
                 <SelectValue placeholder="Etäisyys" />
               </SelectTrigger>
               <SelectContent>
@@ -157,7 +157,7 @@ export default function DiscoverPage() {
             </Select>
 
             <Select value={interestFilter} onValueChange={setInterestFilter}>
-              <SelectTrigger className="border-slate-300 focus:border-cyan-800 focus:ring-cyan-800">
+              <SelectTrigger className="border-stone-300 focus:border-amber-800 focus:ring-amber-800">
                 <SelectValue placeholder="Kiinnostukset" />
               </SelectTrigger>
               <SelectContent>
@@ -172,7 +172,7 @@ export default function DiscoverPage() {
             </Select>
 
             <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-              <SelectTrigger className="border-slate-300 focus:border-cyan-800 focus:ring-cyan-800">
+              <SelectTrigger className="border-stone-300 focus:border-amber-800 focus:ring-amber-800">
                 <SelectValue placeholder="Tyyppi" />
               </SelectTrigger>
               <SelectContent>
@@ -185,7 +185,7 @@ export default function DiscoverPage() {
         </div>
 
         {/* Results Count */}
-        <div className="flex items-center gap-2 mb-4 text-sm text-slate-600">
+        <div className="flex items-center gap-2 mb-4 text-sm text-stone-600">
           <Users className="w-4 h-4" />
           <span>{filteredUsers.length} naapuria löytyi</span>
         </div>
@@ -193,17 +193,17 @@ export default function DiscoverPage() {
         {/* Users Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredUsers.map((user) => (
-            <Card key={user.id} className="bg-white border-slate-200 hover:shadow-lg transition-shadow duration-200">
+            <Card key={user.id} className="bg-white border-stone-200 hover:shadow-lg transition-shadow duration-200">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center">
-                        <Heart className="w-6 h-6 text-cyan-800" />
+                      <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                        <Heart className="w-6 h-6 text-amber-800" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg text-slate-800 font-sans">{user.name}</CardTitle>
-                        <CardDescription className="text-slate-600">{user.age}</CardDescription>
+                        <CardTitle className="text-lg text-stone-800 font-sans">{user.name}</CardTitle>
+                        <CardDescription className="text-stone-600">{user.age}</CardDescription>
                       </div>
                     </div>
                   </div>
@@ -214,9 +214,9 @@ export default function DiscoverPage() {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-sm text-slate-700 leading-relaxed line-clamp-3">{user.bio}</p>
+                <p className="text-sm text-stone-700 leading-relaxed line-clamp-3">{user.bio}</p>
 
-                <div className="flex flex-wrap gap-4 text-xs text-slate-600">
+                <div className="flex flex-wrap gap-4 text-xs text-stone-600">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
                     {user.location} • {user.distance}
@@ -224,7 +224,7 @@ export default function DiscoverPage() {
                 </div>
 
                 {user.children && (
-                  <div className="text-xs text-slate-600">
+                  <div className="text-xs text-stone-600">
                     <span className="font-medium">Lapset:</span> {user.children}
                   </div>
                 )}
@@ -244,19 +244,19 @@ export default function DiscoverPage() {
                   </div>
                 </div>
 
-                <div className="text-xs text-slate-500">Aktiivinen: {user.lastActive}</div>
+                <div className="text-xs text-stone-500">Aktiivinen: {user.lastActive}</div>
 
                 <div className="flex gap-2 pt-2">
                   <Link href={`/profile/${user.id}`} className="flex-1">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full border-cyan-800 text-cyan-800 hover:bg-cyan-50 bg-transparent"
+                      className="w-full border-amber-800 text-amber-800 hover:bg-amber-50 bg-transparent"
                     >
                       Näytä profiili
                     </Button>
                   </Link>
-                  <Button size="sm" className="bg-cyan-800 hover:bg-cyan-900 text-white">
+                  <Button size="sm" className="bg-amber-800 hover:bg-amber-900 text-white">
                     <MessageCircle className="w-3 h-3 mr-1" />
                     Viesti
                   </Button>
@@ -268,9 +268,9 @@ export default function DiscoverPage() {
 
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
-            <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">Ei naapureita löytynyt</h3>
-            <p className="text-slate-500 mb-4">Kokeile muuttaa hakuehtoja tai laajentaa hakualuetta.</p>
+            <Users className="w-12 h-12 text-stone-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-stone-600 mb-2">Ei naapureita löytynyt</h3>
+            <p className="text-stone-500 mb-4">Kokeile muuttaa hakuehtoja tai laajentaa hakualuetta.</p>
             <Button
               onClick={() => {
                 setSearchQuery("")
@@ -279,7 +279,7 @@ export default function DiscoverPage() {
                 setAvailabilityFilter("all")
               }}
               variant="outline"
-              className="border-cyan-800 text-cyan-800 hover:bg-cyan-50 bg-transparent"
+              className="border-amber-800 text-amber-800 hover:bg-amber-50 bg-transparent"
             >
               Tyhjennä suodattimet
             </Button>

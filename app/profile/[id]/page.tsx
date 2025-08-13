@@ -1,13 +1,37 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { MapPin, Heart, MessageCircle, ArrowLeft, Clock, Users, HandHeart } from "lucide-react"
+import {
+  MapPin,
+  Heart,
+  MessageCircle,
+  ArrowLeft,
+  Clock,
+  Users,
+  HandHeart,
+  MoreVertical,
+  AlertTriangle,
+  UserX,
+  Star,
+} from "lucide-react"
 import Link from "next/link"
+import ReportUserModal from "@/components/report-user-modal"
+import BlockUserModal from "@/components/block-user-modal"
+import RateUserModal from "@/components/rate-user-modal"
+import UserReviews from "@/components/user-reviews"
+import TrustBadges from "@/components/trust-badges"
+import TrustScoreDisplay from "@/components/trust-score-display"
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [showBlockModal, setShowBlockModal] = useState(false)
+  const [showRateModal, setShowRateModal] = useState(false)
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
+
   // In a real app, this would fetch user data based on the ID
   const user = {
     id: 1,
@@ -25,7 +49,48 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     memberSince: "Tammikuu 2024",
     responseRate: "95%",
     responseTime: "Yleensä 2 tunnin sisään",
+    averageRating: 4.7,
+    totalReviews: 12,
+    // Added trust and verification data
+    trustScore: 85,
+    verifications: {
+      email: true,
+      phone: true,
+      identity: false,
+      address: true,
+      socialMedia: false,
+    },
+    endorsements: 8,
   }
+
+  const reviews = [
+    {
+      id: 1,
+      reviewerName: "Mikko",
+      rating: 5,
+      comment:
+        "Anna oli erittäin ystävällinen ja auttoi ostoksissa tehokkaasti. Lapset tulivat hyvin toimeen keskenään. Suosittelen lämpimästi!",
+      date: "2 viikkoa sitten",
+      interactionType: "Ostosavut",
+    },
+    {
+      id: 2,
+      reviewerName: "Sari",
+      rating: 5,
+      comment:
+        "Loistava leikkipäivä! Anna on luotettava ja lapset rakastivat hänen koiraansa. Ehdottomasti tapaamme uudelleen.",
+      date: "1 kuukausi sitten",
+      interactionType: "Leikkikaverit",
+    },
+    {
+      id: 3,
+      reviewerName: "Elina",
+      rating: 4,
+      comment: "Mukava käsityökerho. Anna jakoi hyviä vinkkejä ja oli kärsivällinen opettaja.",
+      date: "2 kuukautta sitten",
+      interactionType: "Käsityöt",
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-cyan-50 p-4">
@@ -41,7 +106,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Profile Card */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
             <Card className="bg-white border-slate-200 shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
@@ -56,11 +121,74 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                         <MapPin className="w-4 h-4" />
                         {user.location} • {user.distance} päässä
                       </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <span className="text-sm font-medium text-slate-700">{user.averageRating}</span>
+                        </div>
+                        <span className="text-sm text-slate-500">({user.totalReviews} arvostelua)</span>
+                      </div>
+                      {/* Added trust badges to profile header */}
+                      <div className="mt-3">
+                        <TrustBadges
+                          verifications={user.verifications}
+                          trustScore={user.trustScore}
+                          memberSince={user.memberSince}
+                          endorsements={user.endorsements}
+                          size="sm"
+                        />
+                      </div>
                     </div>
                   </div>
-                  <Badge variant={user.available ? "default" : "secondary"}>
-                    {user.available ? "Saatavilla" : "Ei saatavilla"}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={user.available ? "default" : "secondary"}>
+                      {user.available ? "Saatavilla" : "Ei saatavilla"}
+                    </Badge>
+                    <div className="relative">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => setShowMoreMenu(!showMoreMenu)}
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                      {showMoreMenu && (
+                        <div className="absolute right-0 top-10 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10 min-w-[160px]">
+                          <button
+                            onClick={() => {
+                              setShowRateModal(true)
+                              setShowMoreMenu(false)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-yellow-600 hover:bg-yellow-50 flex items-center gap-2"
+                          >
+                            <Star className="w-4 h-4" />
+                            Arvostele käyttäjä
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowReportModal(true)
+                              setShowMoreMenu(false)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <AlertTriangle className="w-4 h-4" />
+                            Raportoi käyttäjä
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowBlockModal(true)
+                              setShowMoreMenu(false)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <UserX className="w-4 h-4" />
+                            Estä käyttäjä
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </CardHeader>
 
@@ -133,6 +261,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 </div>
               </CardContent>
             </Card>
+
+            <UserReviews reviews={reviews} averageRating={user.averageRating} totalReviews={user.totalReviews} />
           </div>
 
           {/* Sidebar */}
@@ -152,6 +282,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Added trust score display to sidebar */}
+            <TrustScoreDisplay
+              trustScore={user.trustScore}
+              verificationCount={Object.values(user.verifications).filter(Boolean).length}
+              reviewCount={user.totalReviews}
+              endorsementCount={user.endorsements}
+              memberSince={user.memberSince}
+              showDetails={true}
+            />
 
             {/* Activity Info */}
             <Card className="bg-white border-slate-200">
@@ -193,6 +333,27 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <ReportUserModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        userName={user.name}
+        userId={user.id.toString()}
+      />
+      <BlockUserModal
+        isOpen={showBlockModal}
+        onClose={() => setShowBlockModal(false)}
+        userName={user.name}
+        userId={user.id.toString()}
+      />
+      <RateUserModal
+        isOpen={showRateModal}
+        onClose={() => setShowRateModal(false)}
+        userName={user.name}
+        userId={user.id.toString()}
+        interactionType="yhteistyö"
+      />
     </div>
   )
 }

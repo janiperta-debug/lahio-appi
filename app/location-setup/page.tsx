@@ -43,36 +43,36 @@ export default function LocationSetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cyan-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Back link */}
         <Link
           href="/onboarding"
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-cyan-800 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-stone-600 hover:text-amber-700 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Takaisin
         </Link>
 
-        <Card className="bg-white border-slate-200 shadow-lg">
+        <Card className="bg-white border-stone-200 shadow-lg">
           <CardHeader className="text-center pb-4">
-            <div className="w-12 h-12 bg-cyan-800 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-amber-700 rounded-lg flex items-center justify-center mx-auto mb-4">
               <MapPin className="w-6 h-6 text-white" />
             </div>
-            <CardTitle className="text-2xl text-slate-800 font-sans">Aseta kotisi</CardTitle>
-            <CardDescription className="text-slate-600 leading-relaxed">
+            <CardTitle className="text-2xl text-stone-800 font-sans">Aseta kotisi</CardTitle>
+            <CardDescription className="text-stone-600 leading-relaxed">
               Määritä kotisi sijainti ja valitse, kuinka kaukaa haluat löytää naapureita
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-8">
             {/* Privacy Notice */}
-            <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-cyan-800 mt-0.5 flex-shrink-0" />
+                <Shield className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-cyan-800 text-sm mb-1">Yksityisyytesi on turvassa</h4>
-                  <p className="text-xs text-cyan-700 leading-relaxed">
+                  <h4 className="font-semibold text-amber-800 text-sm mb-1">Yksityisyytesi on turvassa</h4>
+                  <p className="text-xs text-amber-700 leading-relaxed">
                     Tarkkaa osoitettasi ei näytetä muille. Muut näkevät vain likimääräisen alueesi ja etäisyyden sinuun.
                   </p>
                 </div>
@@ -82,12 +82,12 @@ export default function LocationSetupPage() {
             {/* Address Input */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-3">
-                <Home className="w-5 h-5 text-cyan-800" />
-                <h3 className="text-lg font-semibold text-slate-800 font-sans">Kotiosoitteesi</h3>
+                <Home className="w-5 h-5 text-amber-700" />
+                <h3 className="text-lg font-semibold text-stone-800 font-sans">Kotiosoitteesi</h3>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address" className="text-slate-700">
+                <Label htmlFor="address" className="text-stone-700">
                   Osoite tai kaupunginosa
                 </Label>
                 <div className="flex gap-2">
@@ -95,14 +95,14 @@ export default function LocationSetupPage() {
                     id="address"
                     type="text"
                     placeholder="Esim. Punavuori, Helsinki tai Hämeenkatu 1, Tampere"
-                    className="border-slate-300 focus:border-cyan-800 focus:ring-cyan-800 flex-1"
+                    className="border-stone-300 focus:border-amber-700 focus:ring-amber-700 flex-1"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
                   <Button
                     onClick={handleAddressSearch}
                     disabled={!address || isLoading}
-                    className="bg-cyan-800 hover:bg-cyan-900 text-white px-6"
+                    className="bg-amber-700 hover:bg-amber-800 text-white px-6"
                   >
                     {isLoading ? "Etsitään..." : "Etsi"}
                   </Button>
@@ -119,8 +119,8 @@ export default function LocationSetupPage() {
             {/* Radius Selection */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-3">
-                <MapPin className="w-5 h-5 text-cyan-800" />
-                <h3 className="text-lg font-semibold text-slate-800 font-sans">Hakusäde</h3>
+                <MapPin className="w-5 h-5 text-amber-700" />
+                <h3 className="text-lg font-semibold text-stone-800 font-sans">Hakusäde</h3>
               </div>
 
               <div className="space-y-4">
@@ -129,8 +129,8 @@ export default function LocationSetupPage() {
                 </div>
 
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-800 mb-1">{getCurrentOption().label}</div>
-                  <div className="text-sm text-slate-600">{getCurrentOption().description}</div>
+                  <div className="text-2xl font-bold text-amber-700 mb-1">{getCurrentOption().label}</div>
+                  <div className="text-sm text-stone-600">{getCurrentOption().description}</div>
                 </div>
 
                 <div className="grid grid-cols-5 gap-2 text-xs">
@@ -140,8 +140,8 @@ export default function LocationSetupPage() {
                       onClick={() => setRadius([option.value])}
                       className={`p-2 rounded text-center transition-colors ${
                         radius[0] === option.value
-                          ? "bg-cyan-800 text-white"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          ? "bg-amber-700 text-white"
+                          : "bg-stone-100 text-stone-600 hover:bg-stone-200"
                       }`}
                     >
                       <div className="font-semibold">{option.label}</div>
@@ -153,9 +153,9 @@ export default function LocationSetupPage() {
 
             {/* Map Preview Placeholder */}
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-slate-700">Esikatselualue</h4>
-              <div className="bg-slate-100 rounded-lg h-48 flex items-center justify-center border-2 border-dashed border-slate-300">
-                <div className="text-center text-slate-500">
+              <h4 className="text-sm font-semibold text-stone-700">Esikatselualue</h4>
+              <div className="bg-stone-100 rounded-lg h-48 flex items-center justify-center border-2 border-dashed border-stone-300">
+                <div className="text-center text-stone-500">
                   <MapPin className="w-8 h-8 mx-auto mb-2" />
                   <p className="text-sm">Karttaesikatselu tulossa</p>
                   <p className="text-xs">Näet hakualueesi kartalla</p>
@@ -164,10 +164,10 @@ export default function LocationSetupPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-200">
+            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-stone-200">
               <Button
                 variant="outline"
-                className="flex-1 border-slate-300 text-slate-600 hover:bg-slate-50 bg-transparent"
+                className="flex-1 border-stone-300 text-stone-600 hover:bg-stone-50 bg-transparent"
                 onClick={() => (window.location.href = "/dashboard")}
               >
                 Ohita toistaiseksi
@@ -175,13 +175,13 @@ export default function LocationSetupPage() {
               <Button
                 onClick={handleSaveLocation}
                 disabled={!locationFound}
-                className="flex-1 bg-cyan-800 hover:bg-cyan-900 text-white"
+                className="flex-1 bg-amber-700 hover:bg-amber-800 text-white"
               >
                 Tallenna sijainti
               </Button>
             </div>
 
-            <p className="text-xs text-slate-500 text-center">
+            <p className="text-xs text-stone-500 text-center">
               Voit muuttaa sijaintiasi ja hakusädettä milloin tahansa asetuksista
             </p>
           </CardContent>

@@ -6,12 +6,19 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Send, MoreVertical, Shield, Clock } from "lucide-react"
+import { ArrowLeft, Send, MoreVertical, Shield, Clock, AlertTriangle, UserX, Star } from "lucide-react"
 import Link from "next/link"
+import ReportUserModal from "@/components/report-user-modal"
+import BlockUserModal from "@/components/block-user-modal"
+import RateUserModal from "@/components/rate-user-modal"
 
 export default function ConversationPage({ params }: { params: { id: string } }) {
   const [newMessage, setNewMessage] = useState("")
   const [isTyping, setIsTyping] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [showBlockModal, setShowBlockModal] = useState(false)
+  const [showRateModal, setShowRateModal] = useState(false)
+  const [showMoreMenu, setShowMoreMenu] = useState(false)
 
   // Mock conversation data
   const conversation = {
@@ -115,9 +122,51 @@ export default function ConversationPage({ params }: { params: { id: string } })
                   Näytä profiili
                 </Button>
               </Link>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+                {showMoreMenu && (
+                  <div className="absolute right-0 top-10 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10 min-w-[160px]">
+                    {/* Added rate user option to messaging dropdown */}
+                    <button
+                      onClick={() => {
+                        setShowRateModal(true)
+                        setShowMoreMenu(false)
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-yellow-600 hover:bg-yellow-50 flex items-center gap-2"
+                    >
+                      <Star className="w-4 h-4" />
+                      Arvostele käyttäjä
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowReportModal(true)
+                        setShowMoreMenu(false)
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                      Raportoi käyttäjä
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowBlockModal(true)
+                        setShowMoreMenu(false)
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <UserX className="w-4 h-4" />
+                      Estä käyttäjä
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -207,6 +256,28 @@ export default function ConversationPage({ params }: { params: { id: string } })
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <ReportUserModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        userName={conversation.name}
+        userId={conversation.id.toString()}
+      />
+      <BlockUserModal
+        isOpen={showBlockModal}
+        onClose={() => setShowBlockModal(false)}
+        userName={conversation.name}
+        userId={conversation.id.toString()}
+      />
+      {/* Added rating modal to messaging interface */}
+      <RateUserModal
+        isOpen={showRateModal}
+        onClose={() => setShowRateModal(false)}
+        userName={conversation.name}
+        userId={conversation.id.toString()}
+        interactionType="viestintä"
+      />
     </div>
   )
 }

@@ -16,9 +16,8 @@ const openSans = Open_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "LähiöÄppi - Löydä ystäviä omalla tahdillasi",
-  description:
-    "Yhdistämme naapureita hellävaraisesti. Löydä leikkikavereita, vapaaehtoisia apuun tai mukavia hetkiä lähialueeltasi.",
+  title: "Pihapiiri - Löydä ystäviä naapurustosta",
+  description: "Yhdistämme naapureita. Löydä leikkikavereita, vapaaehtoisia apuun tai mukavia hetkiä lähialueeltasi.",
   generator: "v0.app",
 }
 

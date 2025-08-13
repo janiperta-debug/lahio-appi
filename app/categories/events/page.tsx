@@ -69,13 +69,13 @@ export default function EventsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-cyan-50 p-4">
+    <div className="min-h-screen bg-amber-50 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-cyan-800 mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-stone-600 hover:text-amber-700 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Takaisin etusivulle
@@ -83,10 +83,10 @@ export default function EventsPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 font-sans mb-2">Lähihetket</h1>
-              <p className="text-slate-600 leading-relaxed">Rauhallisia tapahtumia ja kokoontumisia lähellä</p>
+              <h1 className="text-3xl font-bold text-stone-800 font-sans mb-2">Lähihetket</h1>
+              <p className="text-stone-600 leading-relaxed">Rauhallisia tapahtumia ja kokoontumisia lähellä</p>
             </div>
-            <Button className="bg-cyan-800 hover:bg-cyan-900 text-white">
+            <Button className="bg-amber-700 hover:bg-amber-800 text-white">
               <Plus className="w-4 h-4 mr-2" />
               Luo tapahtuma
             </Button>
@@ -95,7 +95,7 @@ export default function EventsPage() {
 
         {/* Filters */}
         <div className="flex items-center gap-3 mb-6">
-          <Filter className="w-4 h-4 text-slate-600" />
+          <Filter className="w-4 h-4 text-stone-600" />
           <div className="flex gap-2 flex-wrap">
             <Button
               variant={filter === "all" ? "default" : "outline"}
@@ -103,8 +103,8 @@ export default function EventsPage() {
               onClick={() => setFilter("all")}
               className={
                 filter === "all"
-                  ? "bg-cyan-800 hover:bg-cyan-900 text-white"
-                  : "border-slate-300 text-slate-600 hover:bg-slate-50 bg-transparent"
+                  ? "bg-amber-700 hover:bg-amber-800 text-white"
+                  : "border-stone-300 text-stone-600 hover:bg-stone-50 bg-transparent"
               }
             >
               Kaikki
@@ -115,8 +115,8 @@ export default function EventsPage() {
               onClick={() => setFilter("upcoming")}
               className={
                 filter === "upcoming"
-                  ? "bg-cyan-800 hover:bg-cyan-900 text-white"
-                  : "border-slate-300 text-slate-600 hover:bg-slate-50 bg-transparent"
+                  ? "bg-amber-700 hover:bg-amber-800 text-white"
+                  : "border-stone-300 text-stone-600 hover:bg-stone-50 bg-transparent"
               }
             >
               Tulevat
@@ -127,8 +127,8 @@ export default function EventsPage() {
               onClick={() => setFilter("available")}
               className={
                 filter === "available"
-                  ? "bg-cyan-800 hover:bg-cyan-900 text-white"
-                  : "border-slate-300 text-slate-600 hover:bg-slate-50 bg-transparent"
+                  ? "bg-amber-700 hover:bg-amber-800 text-white"
+                  : "border-stone-300 text-stone-600 hover:bg-stone-50 bg-transparent"
               }
             >
               Tilaa jäljellä
@@ -139,8 +139,8 @@ export default function EventsPage() {
               onClick={() => setFilter("nearby")}
               className={
                 filter === "nearby"
-                  ? "bg-cyan-800 hover:bg-cyan-900 text-white"
-                  : "border-slate-300 text-slate-600 hover:bg-slate-50 bg-transparent"
+                  ? "bg-amber-700 hover:bg-amber-800 text-white"
+                  : "border-stone-300 text-stone-600 hover:bg-stone-50 bg-transparent"
               }
             >
               Lähellä
@@ -151,17 +151,17 @@ export default function EventsPage() {
         {/* Events List */}
         <div className="space-y-4">
           {filteredEvents.map((event) => (
-            <Card key={event.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+            <Card key={event.id} className="bg-white border-stone-200 hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-cyan-800" />
+                      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                        <Calendar className="w-5 h-5 text-amber-700" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg text-slate-800 font-sans">{event.title}</CardTitle>
-                        <CardDescription className="text-slate-600">Järjestäjä: {event.organizer}</CardDescription>
+                        <CardTitle className="text-lg text-stone-800 font-sans">{event.title}</CardTitle>
+                        <CardDescription className="text-stone-600">Järjestäjä: {event.organizer}</CardDescription>
                       </div>
                     </div>
                   </div>
@@ -177,9 +177,9 @@ export default function EventsPage() {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <p className="text-slate-700 leading-relaxed">{event.description}</p>
+                <p className="text-stone-700 leading-relaxed">{event.description}</p>
 
-                <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                <div className="flex flex-wrap gap-4 text-sm text-stone-600">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     {event.date}
@@ -198,14 +198,14 @@ export default function EventsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-cyan-800 text-cyan-800 hover:bg-cyan-50 bg-transparent"
+                    className="border-amber-700 text-amber-700 hover:bg-amber-50 bg-transparent"
                   >
                     Lisätiedot
                   </Button>
                   {event.upcoming && (
                     <Button
                       size="sm"
-                      className="bg-cyan-800 hover:bg-cyan-900 text-white"
+                      className="bg-amber-700 hover:bg-amber-800 text-white"
                       disabled={event.participants.split("/")[0] >= event.participants.split("/")[1]}
                     >
                       {event.participants.split("/")[0] >= event.participants.split("/")[1] ? "Täynnä" : "Ilmoittaudu"}
@@ -219,13 +219,13 @@ export default function EventsPage() {
 
         {filteredEvents.length === 0 && (
           <div className="text-center py-12">
-            <Calendar className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-600 mb-2">Ei tapahtumia</h3>
-            <p className="text-slate-500 mb-4">Valituilla suodattimilla ei löytynyt tapahtumia.</p>
+            <Calendar className="w-12 h-12 text-stone-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-stone-600 mb-2">Ei tapahtumia</h3>
+            <p className="text-stone-500 mb-4">Valituilla suodattimilla ei löytynyt tapahtumia.</p>
             <Button
               onClick={() => setFilter("all")}
               variant="outline"
-              className="border-cyan-800 text-cyan-800 hover:bg-cyan-50 bg-transparent"
+              className="border-amber-700 text-amber-700 hover:bg-amber-50 bg-transparent"
             >
               Näytä kaikki
             </Button>

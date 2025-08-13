@@ -44,7 +44,7 @@ export default function AuthPage() {
             </div>
             <CardTitle className="text-2xl text-slate-800 font-sans">Tervetuloa mukaan</CardTitle>
             <CardDescription className="text-slate-600 leading-relaxed">
-              Aloitetaan rauhassa. Voit aina muuttaa tietojasi myöhemmin.
+              Luo tili ja aloita tutustuminen naapureihin.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -101,7 +101,7 @@ export default function AuthPage() {
                     className="w-full bg-cyan-800 hover:bg-cyan-900 text-white mt-6"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Luodaan tiliä..." : "Luo tili rauhassa"}
+                    {isLoading ? "Luodaan tiliä..." : "Luo tili"}
                   </Button>
                 </form>
               </TabsContent>
@@ -144,7 +144,7 @@ export default function AuthPage() {
             </Tabs>
 
             <p className="text-xs text-slate-500 text-center mt-6 leading-relaxed">
-              Liittymällä hyväksyt, että käsittelemme tietojasi huolellisesti ja turvallisesti.
+              Liittymällä hyväksyt, että käsittelemme tietojasi turvallisesti.
             </p>
           </CardContent>
         </Card>

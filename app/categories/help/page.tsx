@@ -78,13 +78,13 @@ export default function HelpPage() {
   const requests = helpOffers.concat(helpRequests).filter((item) => item.type === "request")
 
   return (
-    <div className="min-h-screen bg-cyan-50 p-4">
+    <div className="min-h-screen bg-amber-50 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-cyan-800 mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-stone-600 hover:text-amber-800 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Takaisin etusivulle
@@ -92,10 +92,10 @@ export default function HelpPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 font-sans mb-2">Auttavat kädet</h1>
-              <p className="text-slate-600 leading-relaxed">Pyydä apua tai tarjoa omaasi naapureille</p>
+              <h1 className="text-3xl font-bold text-stone-800 font-sans mb-2">Auttavat kädet</h1>
+              <p className="text-stone-600 leading-relaxed">Pyydä apua tai tarjoa omaasi naapureille</p>
             </div>
-            <Button className="bg-violet-600 hover:bg-violet-700 text-white">
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white">
               <Plus className="w-4 h-4 mr-2" />
               Lisää ilmoitus
             </Button>
@@ -115,17 +115,17 @@ export default function HelpPage() {
 
           <TabsContent value="offers" className="space-y-4">
             {offers.map((offer) => (
-              <Card key={offer.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+              <Card key={offer.id} className="bg-white border-stone-200 hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
-                          <HandHeart className="w-5 h-5 text-violet-600" />
+                        <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                          <HandHeart className="w-5 h-5 text-amber-600" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg text-slate-800 font-sans">{offer.name}</CardTitle>
-                          <CardDescription className="text-slate-600">{offer.category}</CardDescription>
+                          <CardTitle className="text-lg text-stone-800 font-sans">{offer.name}</CardTitle>
+                          <CardDescription className="text-stone-600">{offer.category}</CardDescription>
                         </div>
                       </div>
                     </div>
@@ -134,9 +134,9 @@ export default function HelpPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <p className="text-slate-700 leading-relaxed">{offer.description}</p>
+                  <p className="text-stone-700 leading-relaxed">{offer.description}</p>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                  <div className="flex flex-wrap gap-4 text-sm text-stone-600">
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
                       {offer.location} • {offer.distance}
@@ -151,11 +151,11 @@ export default function HelpPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-violet-600 text-violet-600 hover:bg-violet-50 bg-transparent"
+                      className="border-amber-600 text-amber-600 hover:bg-amber-50 bg-transparent"
                     >
                       Näytä profiili
                     </Button>
-                    <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white">
+                    <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
                       Ota yhteyttä
                     </Button>
                   </div>
@@ -166,7 +166,7 @@ export default function HelpPage() {
 
           <TabsContent value="requests" className="space-y-4">
             {requests.map((request) => (
-              <Card key={request.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+              <Card key={request.id} className="bg-white border-stone-200 hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -175,8 +175,8 @@ export default function HelpPage() {
                           <HandHeart className="w-5 h-5 text-orange-600" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg text-slate-800 font-sans">{request.name}</CardTitle>
-                          <CardDescription className="text-slate-600">{request.category}</CardDescription>
+                          <CardTitle className="text-lg text-stone-800 font-sans">{request.name}</CardTitle>
+                          <CardDescription className="text-stone-600">{request.category}</CardDescription>
                         </div>
                       </div>
                     </div>
@@ -185,9 +185,9 @@ export default function HelpPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <p className="text-slate-700 leading-relaxed">{request.description}</p>
+                  <p className="text-stone-700 leading-relaxed">{request.description}</p>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                  <div className="flex flex-wrap gap-4 text-sm text-stone-600">
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
                       {request.location} • {request.distance}
