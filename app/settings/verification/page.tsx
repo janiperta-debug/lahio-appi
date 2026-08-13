@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, ArrowLeft, CheckCircle, Mail, Phone, MapPin } from "lucide-react"
-import Link from "next/link"
+import { Link } from "expo-router"
 import VerificationModal from "@/components/verification-modal"
 import TrustScoreDisplay from "@/components/trust-score-display"
 
