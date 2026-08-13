@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Shield, UserX, ArrowLeft, AlertTriangle, Phone, Eye, MessageCircle } from "lucide-react"
-import Link from "next/link"
+import { Link } from "expo-router"
 
 export default function SafetySettingsPage() {
   const [safetySettings, setSafetySettings] = useState({
