@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { MapPin, Home, Shield, ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { Link } from "expo-router"
 
 export default function LocationSettingsPage() {
   const [address, setAddress] = useState("Punavuori, Helsinki")
