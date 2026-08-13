@@ -25,6 +25,9 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 app = FastAPI()
 api = APIRouter(prefix="/api")
+@api.get("")
+async def api_health():
+    return {"status": "ok", "service": "lahio-api"}
 
 DIGITRANSIT_URL = "https://api.digitransit.fi/routing/v2/finland/gtfs/v1"
 DIGITRANSIT_KEY = os.environ.get("DIGITRANSIT_API_KEY", "")
