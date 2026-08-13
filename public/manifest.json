@@ -1,0 +1,19 @@
+{
+  "name": "Lähellä",
+  "short_name": "Lähellä",
+  "description": "Yhdistää naapuruston ihmiset toisiinsa.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#C4632A",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
