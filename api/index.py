@@ -1,10 +1,3 @@
-from fastapi import FastAPI
+"""Vercel entrypoint for the Lähellä FastAPI backend."""
 
-app = FastAPI()
-
-@app.get("/api")
-async def api_health():
-    return {
-        "status": "ok",
-        "service": "lahio-api"
-    }
+from backend.server import app
