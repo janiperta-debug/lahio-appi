@@ -1,24 +1,42 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Work_Sans, Open_Sans } from "next/font/google"
-import "./globals.css"
+import type { Metadata, Viewport } from 'next'
+import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import './globals.css'
 
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-work-sans",
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-plus-jakarta',
+  display: 'swap',
 })
 
-const openSans = Open_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-open-sans",
+const fraunces = Fraunces({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-fraunces',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: "Pihapiiri - Löydä ystäviä naapurustosta",
-  description: "Yhdistämme naapureita. Löydä leikkikavereita, vapaaehtoisia apuun tai mukavia hetkiä lähialueeltasi.",
-  generator: "v0.app",
+  title: 'Lähellä — Ihmiset lähellä sinua',
+  description: 'Löydä naapureita, leikkikavereita ja yhteisöllisiä hetkiä lähialueeltasi. Ilmainen, turvallinen ja suomalainen.',
+  generator: 'v0.app',
+  applicationName: 'Lähellä',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Lähellä',
+  },
+  icons: {
+    icon: '/images/lahella-app-icon.jpg',
+    apple: '/images/lahella-app-icon.jpg',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#e8734a',
 }
 
 export default function RootLayout({
@@ -27,8 +45,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fi" className={`${workSans.variable} ${openSans.variable} antialiased`}>
-      <body>{children}</body>
+    <html lang="fi" className={`${plusJakarta.variable} ${fraunces.variable}`}>
+      <body className="font-sans antialiased">
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }
