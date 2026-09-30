@@ -1,6 +1,7 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 export function ReportProfileForm({ profileId }: { profileId: string }) {
