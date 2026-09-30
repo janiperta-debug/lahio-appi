@@ -29,7 +29,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name } },
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: `${window.location.origin}/auth/confirm?next=/`,
+        },
       })
 
       if (error) setError(error.message)
