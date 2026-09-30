@@ -9,6 +9,7 @@ type Profile = {
   bio: string | null
   search_radius_km: number | null
   location_city: string | null
+  location_locked_until: string | null
   email: string | null
 }
 
@@ -22,6 +23,8 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [locating, setLocating] = useState(false)
+  const locationLocked = !!profile.location_locked_until && new Date(profile.location_locked_until) > new Date()
+  const lockDate = profile.location_locked_until ? new Date(profile.location_locked_until).toLocaleDateString('fi-FI') : null
 
   async function saveProfile(event: FormEvent) {
     event.preventDefault()
@@ -96,12 +99,14 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           Tarkkaa sijaintipistettä ei näytetä muille käyttäjille.
         </p>
         <div className="mt-4 space-y-3">
+          {profile.location_city && <p className="text-sm text-lahella-text2">Nykyinen sijainti: <span className="font-semibold text-lahella-text">{profile.location_city}</span></p>}
+          {locationLocked && <p className="rounded-xl bg-terracotta-faint px-4 py-3 text-sm leading-5 text-lahella-text2">Sijainti on lukittu {lockDate} asti, koska sitä siirrettiin yli 2 km. Hakualueen voit silti vaihtaa.</p>}
           <input value={address} onChange={(e) => setAddress(e.target.value)}
             className="w-full rounded-xl border border-border bg-background px-4 py-3"
             placeholder="Osoite tai paikkakunta" />
-          <button type="button" onClick={saveLocation} disabled={locating || !address.trim()}
+          <button type="button" onClick={saveLocation} disabled={locating || !address.trim() || locationLocked}
             className="w-full rounded-xl border border-terracotta px-4 py-3 font-semibold text-terracotta disabled:opacity-50">
-            {locating ? 'Haetaan sijaintia…' : 'Päivitä sijainti'}
+            {locating ? 'Haetaan sijaintia…' : locationLocked ? 'Sijainti lukittu' : 'Päivitä sijainti'}
           </button>
         </div>
       </section>
