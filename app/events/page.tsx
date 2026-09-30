@@ -1,18 +1,27 @@
-import { AppShell } from "@/components/app-shell/app-shell"
+import { redirect } from 'next/navigation'
+import { AppShell } from '@/components/app-shell/app-shell'
+import { EventsView } from '@/components/events/events-view'
+import { createClient } from '@/lib/supabase/server'
 
-export default function EventsPage() {
-  return (
-    <AppShell>
-      <section className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
-        <div className="mb-6">
-          <p className="text-sm font-semibold text-terracotta">Lähellä</p>
-          <h1 className="font-serif text-3xl font-semibold text-lahella-text">Tapahtumat</h1>
-          <p className="mt-2 text-sm text-lahella-text2">Tapahtumat lähialueeltasi.</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <p className="text-sm text-lahella-text2">Tapahtumadata liitetään tähän näkymään vanhan Lähellä-sovelluksen mukaisesti seuraavassa vaiheessa.</p>
-        </div>
-      </section>
-    </AppShell>
-  )
+export default async function EventsPage() {
+  const supabase = await createClient()
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const claims = claimsData?.claims
+
+  if (!claims?.sub) redirect('/login')
+
+  const { data: events } = await supabase
+    .from('events')
+    .select('id,title,description,category,location_address,location_city,starts_at,ends_at,max_participants,event_participants(count)')
+    .eq('status', 'active')
+    .gte('starts_at', new Date().toISOString())
+    .order('starts_at', { ascending: true })
+    .limit(50)
+
+  const items = (events ?? []).map((event: any) => ({
+    ...event,
+    participant_count: event.event_participants?.[0]?.count ?? 0,
+  }))
+
+  return <AppShell><EventsView events={items} /></AppShell>
 }
