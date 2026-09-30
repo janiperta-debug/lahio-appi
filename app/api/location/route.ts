@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
-  const { data: { claims } } = await supabase.auth.getClaims()
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const claims = claimsData?.claims
 
   if (!claims?.sub) {
     return NextResponse.json({ error: 'Kirjautuminen vaaditaan.' }, { status: 401 })
