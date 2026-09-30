@@ -6,16 +6,11 @@ export async function POST(request: Request) {
   const { data: claimsData } = await supabase.auth.getClaims()
   const claims = claimsData?.claims
 
-  if (!claims?.sub) {
-    return NextResponse.json({ error: 'Kirjautuminen vaaditaan.' }, { status: 401 })
-  }
+  if (!claims?.sub) return NextResponse.json({ error: 'Kirjautuminen vaaditaan.' }, { status: 401 })
 
   const body = (await request.json()) as { address?: string; radiusKm?: number }
   const address = body.address?.trim()
-
-  if (!address) {
-    return NextResponse.json({ error: 'Anna osoite tai paikkakunta.' }, { status: 400 })
-  }
+  if (!address) return NextResponse.json({ error: 'Anna osoite tai paikkakunta.' }, { status: 400 })
 
   const radiusKm = Math.min(100, Math.max(0.5, Number(body.radiusKm ?? 5)))
   const params = new URLSearchParams({
@@ -26,17 +21,13 @@ export async function POST(request: Request) {
     `https://nominatim.openstreetmap.org/search?${params.toString()}`,
     { headers: { 'User-Agent': 'Lahella/1.0' }, cache: 'no-store' }
   )
-
-  if (!geocodeResponse.ok) {
-    return NextResponse.json({ error: 'Sijainnin hakeminen epäonnistui.' }, { status: 502 })
-  }
+  if (!geocodeResponse.ok) return NextResponse.json({ error: 'Sijainnin hakeminen epäonnistui.' }, { status: 502 })
 
   const results = (await geocodeResponse.json()) as Array<{
     lat: string
     lon: string
     address?: { city?: string; town?: string; municipality?: string; village?: string }
   }>
-
   const result = results[0]
   if (!result) return NextResponse.json({ error: 'Sijaintia ei löytynyt.' }, { status: 404 })
 
@@ -45,18 +36,21 @@ export async function POST(request: Request) {
   const city = result.address?.city ?? result.address?.town ?? result.address?.municipality ?? result.address?.village ?? address
   const point = `SRID=4326;POINT(${longitude} ${latitude})`
 
-  const { error } = await supabase.rpc('update_user_location', {
-    new_point: point,
-    new_city: city,
-  })
-
-  if (error) return NextResponse.json({ error: 'Sijainnin tallennus epäonnistui.' }, { status: 500 })
+  const { error } = await supabase.rpc('update_user_location', { new_point: point, new_city: city })
+  if (error) {
+    const locked = error.message.includes('Sijaintia ei voi siirtää yli 2 km')
+    return NextResponse.json(
+      { error: locked
+        ? 'Sijaintisi on lukittu 7 päiväksi, koska sitä siirrettiin yli 2 km. Voit muuttaa sitä uudelleen lukituksen päätyttyä.'
+        : 'Sijainnin tallennus epäonnistui.' },
+      { status: locked ? 409 : 500 }
+    )
+  }
 
   const { error: radiusError } = await supabase
     .from('profiles')
     .update({ search_radius_km: radiusKm })
     .eq('id', claims.sub)
-
   if (radiusError) return NextResponse.json({ error: 'Hakualueen tallennus epäonnistui.' }, { status: 500 })
 
   return NextResponse.json({ city, latitude, longitude, radiusKm })
