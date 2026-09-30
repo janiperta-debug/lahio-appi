@@ -19,6 +19,7 @@ export function ReportProfileForm({ profileId }: { profileId: string }) {
     const { error } = await supabase.from('reports').insert({
       reporter_id: (await supabase.auth.getUser()).data.user?.id,
       target_type: 'profile',
+      details: reason.trim(),
       target_id: profileId,
       reason: reason.trim(),
     })
