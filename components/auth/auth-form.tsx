@@ -15,7 +15,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement) {
+  async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
     setLoading(true)
     setError('')
