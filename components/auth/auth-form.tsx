@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import type { FormEvent } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 type Mode = 'login' | 'register'
