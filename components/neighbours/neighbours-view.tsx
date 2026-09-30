@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
@@ -113,7 +114,7 @@ export function NeighboursView({
 
   return (
     <section className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
-      <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold text-terracotta">Lähelläsi</p>
           <h1 className="font-serif text-3xl font-semibold text-lahella-text">
@@ -124,14 +125,22 @@ export function NeighboursView({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={refresh}
-          aria-label="Päivitä"
-          className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-lahella-text2 transition-colors hover:text-terracotta"
-        >
-          <RefreshCw size={17} className={refreshing ? "animate-spin" : ""} />
-        </button>
+        <div className="flex gap-2">
+          <Link
+            href={`/create/listing?type=${section === "help" ? "help" : "play"}`}
+            className="rounded-xl bg-terracotta px-4 py-2.5 text-sm font-semibold text-white"
+          >
+            + {section === "help" ? "Pyydä tai tarjoa apua" : "Luo ilmoitus"}
+          </Link>
+          <button
+            type="button"
+            onClick={refresh}
+            aria-label="Päivitä"
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-lahella-text2 transition-colors hover:text-terracotta"
+          >
+            <RefreshCw size={17} className={refreshing ? "animate-spin" : ""} />
+          </button>
+        </div>
       </div>
 
       <div className="mb-3 grid grid-cols-2 rounded-2xl bg-lahella-surface3 p-1">
@@ -192,6 +201,12 @@ export function NeighboursView({
           <p className="mx-auto mt-2 max-w-md text-sm text-lahella-text2">
             Kun lähialueellasi julkaistaan ilmoituksia, ne näkyvät tässä.
           </p>
+          <Link
+            href={`/create/listing?type=${section === "help" ? "help" : "play"}`}
+            className="mt-5 inline-flex rounded-xl bg-terracotta px-5 py-3 text-sm font-semibold text-white"
+          >
+            + Luo ensimmäinen ilmoitus
+          </Link>
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
