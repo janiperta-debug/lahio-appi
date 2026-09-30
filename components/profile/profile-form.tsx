@@ -36,6 +36,13 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     setSaving(false)
   }
 
+  async function logout() {
+    setError(''); setMessage('')
+    const { error } = await supabase.auth.signOut()
+    if (error) setError('Uloskirjautuminen epäonnistui.')
+    else window.location.href = '/login'
+  }
+
   async function saveLocation() {
     setLocating(true); setError(''); setMessage('')
     try {
@@ -97,6 +104,14 @@ export function ProfileForm({ profile }: { profile: Profile }) {
             {locating ? 'Haetaan sijaintia…' : 'Päivitä sijainti'}
           </button>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-red-100 bg-red-50/60 p-5">
+        <h2 className="font-semibold text-lahella-text">Kirjautuminen</h2>
+        <p className="mt-1 text-sm text-lahella-text2">Voit kirjautua ulos tällä laitteella milloin tahansa.</p>
+        <button type="button" onClick={logout} className="mt-4 rounded-xl border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-100">
+          Kirjaudu ulos
+        </button>
       </section>
 
       {(message || error) && (
