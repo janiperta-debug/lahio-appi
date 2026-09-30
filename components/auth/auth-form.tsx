@@ -15,7 +15,33 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleGoogleSignIn() {
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      setError('Google-kirjautumista ei voitu aloittaa.')
+      setLoading(false)
+    }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement) {
     event.preventDefault()
     setLoading(true)
     setError('')
@@ -54,7 +80,22 @@ export function AuthForm({ mode }: { mode: Mode }) {
               : 'Luo tili ja löydä ihmisiä, tapahtumia ja naapuriapua läheltäsi.'}
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-7 space-y-4">
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="mt-7 flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-white px-4 py-3 font-semibold text-lahella-text disabled:opacity-60"
+          >
+            Jatka Googlella
+          </button>
+
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-medium text-lahella-muted">tai sähköpostilla</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'register' && (
               <label className="block">
                 <span className="mb-1.5 block text-sm font-medium text-lahella-text">Nimi</span>
