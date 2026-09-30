@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
-  const { data: { claims } } = await supabase.auth.getClaims()
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const claims = claimsData?.claims
 
   if (!claims?.sub) redirect('/login')
 
