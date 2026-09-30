@@ -23,7 +23,8 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const { data: { claims } } = await supabase.auth.getClaims()
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const claims = claimsData?.claims ?? null
   const pathname = request.nextUrl.pathname
   const publicPath =
     pathname === '/login' ||
