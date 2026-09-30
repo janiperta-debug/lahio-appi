@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { AppShell } from '@/components/app-shell/app-shell'
 import { ProfileForm } from '@/components/profile/profile-form'
@@ -30,10 +31,18 @@ export default async function ProfilePage() {
   return (
     <AppShell>
       <section className="mx-auto w-full max-w-3xl p-4 sm:p-6 lg:p-8">
-        <div className="mb-6">
-          <p className="text-sm font-semibold text-terracotta">Lähellä</p>
-          <h1 className="font-serif text-3xl font-semibold text-lahella-text">Profiili</h1>
-          <p className="mt-2 text-sm text-lahella-text2">Hallitse omia tietojasi ja lähialuettasi.</p>
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-terracotta">Lähellä</p>
+            <h1 className="font-serif text-3xl font-semibold text-lahella-text">Profiili</h1>
+            <p className="mt-2 text-sm text-lahella-text2">Hallitse omia tietojasi ja lähialuettasi.</p>
+          </div>
+          <Link
+            href="/listings"
+            className="inline-flex w-fit rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-lahella-text2 hover:text-terracotta"
+          >
+            Omat ilmoitukset
+          </Link>
         </div>
         <ProfileForm profile={profile} />
       </section>
