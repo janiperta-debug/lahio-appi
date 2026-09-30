@@ -17,6 +17,12 @@ export default async function ProfilePage() {
     .eq('id', claims.sub)
     .single()
 
+  const [{ count: playCount }, { count: helpCount }, { count: eventCount }] = await Promise.all([
+    supabase.from('play_listings').select('id', { count: 'exact', head: true }).eq('user_id', claims.sub),
+    supabase.from('help_listings').select('id', { count: 'exact', head: true }).eq('user_id', claims.sub),
+    supabase.from('events').select('id', { count: 'exact', head: true }).eq('user_id', claims.sub),
+  ])
+
   if (error || !profile) {
     return (
       <AppShell>
@@ -44,6 +50,18 @@ export default async function ProfilePage() {
           >
             Omat ilmoitukset
           </Link>
+        </div>
+        <div className="mb-5 grid grid-cols-3 overflow-hidden rounded-2xl border border-border bg-card">
+          {[
+            ['Peliseuraa', playCount ?? 0],
+            ['Naapuriapua', helpCount ?? 0],
+            ['Tapahtumia', eventCount ?? 0],
+          ].map(([label, count]) => (
+            <div key={String(label)} className="border-r border-border p-4 text-center last:border-r-0">
+              <div className="text-2xl font-bold text-terracotta">{count}</div>
+              <div className="mt-1 text-xs text-lahella-muted">{label}</div>
+            </div>
+          ))}
         </div>
         <ProfileForm profile={profile} />
       </section>
