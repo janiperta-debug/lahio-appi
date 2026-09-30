@@ -240,9 +240,12 @@ export function NeighboursView({
                   )}
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-lahella-text">
+                    <Link
+                      href={`/user/${item.user_id}`}
+                      className="truncate font-semibold text-lahella-text hover:text-terracotta"
+                    >
                       {name}
-                    </p>
+                    </Link>
                     <p className="truncate text-xs text-lahella-muted">
                       {profile?.bio || city || "Lähialueen naapuri"}
                     </p>
