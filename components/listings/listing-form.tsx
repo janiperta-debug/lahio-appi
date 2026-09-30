@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { FormEvent, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
+import type { FormEvent } from "react"
 import { useRouter } from "next/navigation"
 
 const PLAY_CATEGORIES = [
