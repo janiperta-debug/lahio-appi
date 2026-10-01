@@ -48,32 +48,58 @@ export async function GET(request: Request) {
   const radiusM = Math.round(radiusKm * 1000)
   const selectedCategory = searchParams.get('category') ?? 'all'
 
-  const filters = selectedCategory === 'all'
-    ? Object.values(categoryTags).flat()
-    : categoryTags[selectedCategory] ?? []
+  const filterParts = selectedCategory === 'all'
+    ? [
+        'nwr["leisure"~"playground|sports_centre|pitch|fitness_station|park|nature_reserve|swimming_pool|dog_park"](around:R,LAT,LON);',
+        'nwr["boundary"="national_park"](around:R,LAT,LON);',
+        'nwr["sport"="swimming"](around:R,LAT,LON);',
+        'nwr["amenity"~"public_bath|library|theatre|community_centre"](around:R,LAT,LON);',
+        'nwr["tourism"="museum"](around:R,LAT,LON);',
+      ]
+    : selectedCategory === 'playground'
+      ? ['nwr["leisure"="playground"](around:R,LAT,LON);']
+      : selectedCategory === 'sports'
+        ? ['nwr["leisure"~"sports_centre|pitch|fitness_station"](around:R,LAT,LON);']
+        : selectedCategory === 'nature'
+          ? ['nwr["leisure"~"park|nature_reserve"](around:R,LAT,LON);','nwr["boundary"="national_park"](around:R,LAT,LON);']
+          : selectedCategory === 'swimming'
+            ? ['nwr["leisure"="swimming_pool"](around:R,LAT,LON);','nwr["sport"="swimming"](around:R,LAT,LON);','nwr["amenity"="public_bath"](around:R,LAT,LON);']
+            : selectedCategory === 'pets'
+              ? ['nwr["leisure"="dog_park"](around:R,LAT,LON);']
+              : selectedCategory === 'culture'
+                ? ['nwr["amenity"~"library|theatre|community_centre"](around:R,LAT,LON);','nwr["tourism"="museum"](around:R,LAT,LON);']
+                : []
 
-  if (!filters.length) return NextResponse.json({ places: [], center: { latitude: lat, longitude: lon } })
+  if (!filterParts.length) return NextResponse.json({ places: [], center: { latitude: lat, longitude: lon } })
 
-  const nodes = filters.map(tag => `node${tag}(around:${radiusM},${lat},${lon});`).join('')
-  const ways = filters.map(tag => `way${tag}(around:${radiusM},${lat},${lon});`).join('')
-  const query = `[out:json][timeout:20];(${nodes}${ways});out center tags;`
+  const query = `[out:json][timeout:45];(${filterParts.map(part => part.replaceAll('R', String(radiusM)).replaceAll('LAT', String(lat)).replaceAll('LON', String(lon))).join('')});out center tags;`
+  const overpassEndpoints = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+  ]
 
-  let response: Response
-  try {
-    response = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Lahella/1.0 (community app)',
-      },
-      body: new URLSearchParams({ data: query }),
-      cache: 'no-store',
-    })
-  } catch {
-    return NextResponse.json({ error: 'Karttapaikkojen hakuun ei saatu yhteyttä.', center: { latitude: lat, longitude: lon } }, { status: 502 })
+  let response: Response | null = null
+  for (const endpoint of overpassEndpoints) {
+    try {
+      const candidate = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'Lahella/1.0 (community app)',
+        },
+        body: new URLSearchParams({ data: query }),
+        cache: 'no-store',
+      })
+      if (candidate.ok) {
+        response = candidate
+        break
+      }
+    } catch {
+      // Try the next public Overpass instance.
+    }
   }
 
-  if (!response.ok) {
+  if (!response) {
     return NextResponse.json({ error: 'Karttapaikkojen palvelu ei vastannut.', center: { latitude: lat, longitude: lon } }, { status: 502 })
   }
 
