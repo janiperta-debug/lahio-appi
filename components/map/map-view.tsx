@@ -45,7 +45,7 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
    }
    void load()
    return ()=>{cancelled=true}
- },[])
+ },[cat])
 
  const filtered=useMemo(()=>cat==='all'?places:places.filter(p=>p.category===cat),[places,cat])
 
