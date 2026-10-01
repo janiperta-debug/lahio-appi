@@ -16,7 +16,7 @@ function mapHtml(places:Place[], center:Center|null){
  const userMarker=center
    ? `L.circleMarker([${center.latitude},${center.longitude}],{radius:8,color:'#e8734a',fillColor:'#e8734a',fillOpacity:.9}).addTo(map).bindPopup('<b>Oma sijaintisi</b>');`
    : ''
- return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>html,body,#map{height:100%;margin:0}.leaflet-control-attribution{font-size:10px}</style></head><body><div id="map"></div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\\/script><script>const map=L.map('map').setView([${fallback.latitude},${fallback.longitude}],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);${userMarker}${markers}\\/script></body></html>`
+ return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>html,body,#map{height:100%;margin:0}.leaflet-control-attribution{font-size:10px}</style></head><body><div id="map"></div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>const map=L.map('map').setView([${fallback.latitude},${fallback.longitude}],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);${userMarker}${markers}</script></body></html>`
 }
 
 export function MapView({places:initialPlaces,initialCenter}:{places:Place[];initialCenter:Center|null}){
