@@ -3,10 +3,23 @@ import { AppShell } from '@/components/app-shell/app-shell'
 import { MapView } from '@/components/map/map-view'
 import { createClient } from '@/lib/supabase/server'
 
-export default async function MapPage(){
-  const supabase=await createClient()
-  const {data:claimsData}=await supabase.auth.getClaims()
-  if(!claimsData?.claims?.sub) redirect('/login')
-  const {data:places,error}=await supabase.rpc('get_nearby_map_places')
-  return <AppShell><MapView places={error?[]:(places??[])} /></AppShell>
+export default async function MapPage() {
+  const supabase = await createClient()
+  const { data: claimsData } = await supabase.auth.getClaims()
+  if (!claimsData?.claims?.sub) redirect('/login')
+
+  const [{ data: places, error: placesError }, { data: location }] = await Promise.all([
+    supabase.rpc('get_nearby_map_places'),
+    supabase.rpc('get_my_location_coordinates'),
+  ])
+
+  const center = location?.[0]
+    ? { latitude: Number(location[0].latitude), longitude: Number(location[0].longitude) }
+    : null
+
+  return (
+    <AppShell>
+      <MapView places={placesError ? [] : (places ?? [])} initialCenter={center} />
+    </AppShell>
+  )
 }
