@@ -10,6 +10,7 @@ type Profile = {
   bio: string | null
   search_radius_km: number | null
   location_city: string | null
+  location_display: string | null
   location_locked_until: string | null
   email: string | null
 }
@@ -19,7 +20,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const [name, setName] = useState(profile.display_name ?? '')
   const [bio, setBio] = useState(profile.bio ?? '')
   const [radius, setRadius] = useState(String(profile.search_radius_km ?? 5))
-  const [address, setAddress] = useState(profile.location_city ?? '')
+  const [address, setAddress] = useState(profile.location_display ?? profile.location_city ?? '')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -100,7 +101,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           Tarkkaa sijaintipistettä ei näytetä muille käyttäjille.
         </p>
         <div className="mt-4 space-y-3">
-          {profile.location_city && <p className="text-sm text-lahella-text2">Nykyinen sijainti: <span className="font-semibold text-lahella-text">{profile.location_city}</span></p>}
+          {(profile.location_display || profile.location_city) && <p className="text-sm text-lahella-text2">Nykyinen sijainti: <span className="font-semibold text-lahella-text">{profile.location_display || profile.location_city}</span></p>}
           {locationLocked && <p className="rounded-xl bg-terracotta-faint px-4 py-3 text-sm leading-5 text-lahella-text2">Sijainti on lukittu {lockDate} asti, koska sitä siirrettiin yli 2 km. Hakualueen voit silti vaihtaa.</p>}
           <input value={address} onChange={(e) => setAddress(e.target.value)}
             className="w-full rounded-xl border border-border bg-background px-4 py-3"
