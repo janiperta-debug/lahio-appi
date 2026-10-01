@@ -12,11 +12,38 @@ function popupText(value:string){return value.replace(/&/g,'&amp;').replace(/</g
 
 function mapHtml(places:Place[], center:Center|null){
  const fallback={latitude:center?.latitude??60.2055,longitude:center?.longitude??24.6559}
- const markers=places.map(p=>{const icon=emoji[p.category]||'📍';return `L.marker([${p.latitude},${p.longitude}],{icon:L.divIcon({className:'lahella-marker',html:'<span>${icon}</span>',iconSize:[42,42],iconAnchor:[21,21],popupAnchor:[0,-20]})}).addTo(map).bindPopup('<b>${popupText(p.name)}</b><br>${popupText(p.address||p.location_city||'')}');}).join('')
+ const markers=places.map(p=>{
+   const icon=emoji[p.category]||'📍'
+   return [
+     "L.marker([",String(p.latitude),",",String(p.longitude),"],{icon:L.divIcon({className:'lahella-marker',html:'<span>",
+     icon,
+     "</span>',iconSize:[42,42],iconAnchor:[21,21],popupAnchor:[0,-20]})}).addTo(map).bindPopup('<b>",
+     popupText(p.name),
+     "</b><br>",
+     popupText(p.address||p.location_city||''),
+     "');"
+   ].join('')
+ }).join('')
  const userMarker=center
-   ? "L.circleMarker(["+center.latitude+","+center.longitude+"],{radius:8,color:'#e8734a',fillColor:'#e8734a',fillOpacity:.9}).addTo(map).bindPopup('<b>Oma sijaintisi</b>');"
+   ? [
+       "L.circleMarker([",String(center.latitude),",",String(center.longitude),
+       "],{radius:8,color:'#e8734a',fillColor:'#e8734a',fillOpacity:.9}).addTo(map).bindPopup('<b>Oma sijaintisi</b>');"
+     ].join('')
    : ''
- return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><style>html,body,#map{height:100%;margin:0}.leaflet-control-attribution{font-size:10px}.lahella-marker{display:flex;align-items:center;justify-content:center;width:42px!important;height:42px!important;background:white;border:2px solid #e8734a;border-radius:50%;box-shadow:0 2px 8px rgba(45,36,25,.2);font-size:23px}</style></head><body><div id="map"></div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>const map=L.map('map').setView([${fallback.latitude},${fallback.longitude}],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);${userMarker}${markers}<\/script></body></html>`
+ const htmlParts=[
+   '<!doctype html><html><head>',
+   '<meta name="viewport" content="width=device-width,initial-scale=1">',
+   '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">',
+   '<style>html,body,#map{height:100%;margin:0}.leaflet-control-attribution{font-size:10px}.lahella-marker{display:flex;align-items:center;justify-content:center;width:42px!important;height:42px!important;background:white;border:2px solid #e8734a;border-radius:50%;box-shadow:0 2px 8px rgba(45,36,25,.2);font-size:23px}</style>',
+   '</head><body><div id="map"></div>',
+   '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>',
+   '<script>const map=L.map("map").setView(['+String(fallback.latitude)+','+String(fallback.longitude)+'],14);',
+   'L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"}).addTo(map);',
+   userMarker,
+   markers,
+   '<\\/script></body></html>'
+ ]
+ return htmlParts.join('')
 }
 
 export function MapView({places:initialPlaces,initialCenter}:{places:Place[];initialCenter:Center|null}){
