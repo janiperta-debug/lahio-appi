@@ -45,7 +45,8 @@ export async function POST(request: Request) {
   let results: Array<{
     lat: string
     lon: string
-    address?: { city?: string; town?: string; municipality?: string; village?: string }
+    display_name?: string
+    address?: { road?: string; house_number?: string; postcode?: string; city?: string; town?: string; municipality?: string; village?: string }
   }>
 
   try {
@@ -64,6 +65,8 @@ export async function POST(request: Request) {
   const latitude = Number(result.lat)
   const longitude = Number(result.lon)
   const city = result.address?.city ?? result.address?.town ?? result.address?.municipality ?? result.address?.village ?? address
+  const street = [result.address?.road, result.address?.house_number].filter(Boolean).join(' ')
+  const locationDisplay = [street, [result.address?.postcode, city].filter(Boolean).join(' ')].filter(Boolean).join(', ') || result.display_name || address
   const point = `SRID=4326;POINT(${longitude} ${latitude})`
 
   const { error } = await supabase.rpc('update_user_location', { new_point: point, new_city: city })
@@ -83,5 +86,11 @@ export async function POST(request: Request) {
     .eq('id', claims.sub)
   if (radiusError) return NextResponse.json({ error: 'Hakualueen tallennus epäonnistui.' }, { status: 500 })
 
-  return NextResponse.json({ city, latitude, longitude, radiusKm })
+  const { error: displayError } = await supabase
+    .from('profiles')
+    .update({ location_display: locationDisplay })
+    .eq('id', claims.sub)
+  if (displayError) return NextResponse.json({ error: 'Sijainnin näyttötiedon tallennus epäonnistui.' }, { status: 500 })
+
+  return NextResponse.json({ city, locationDisplay, latitude, longitude, radiusKm })
 }
