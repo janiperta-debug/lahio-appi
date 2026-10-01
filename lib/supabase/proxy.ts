@@ -22,21 +22,29 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
+  const redirectWithCookies = (pathname: string) => {
+    const url = request.nextUrl.clone()
+    url.pathname = pathname
+    const redirectResponse = NextResponse.redirect(url)
+
+    for (const cookie of response.cookies.getAll()) {
+      redirectResponse.cookies.set(cookie)
+    }
+
+    return redirectResponse
+  }
+
   const { data: claimsData } = await supabase.auth.getClaims()
   const claims = claimsData?.claims ?? null
   const pathname = request.nextUrl.pathname
   const publicPath = pathname === '/login' || pathname === '/register' || pathname.startsWith('/auth/')
 
   if (!claims && !publicPath) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    return redirectWithCookies('/login')
   }
 
   if (claims && (pathname === '/login' || pathname === '/register')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
-    return NextResponse.redirect(url)
+    return redirectWithCookies('/')
   }
 
   if (claims && !publicPath && pathname !== '/onboarding') {
@@ -47,9 +55,7 @@ export async function updateSession(request: NextRequest) {
       .maybeSingle()
 
     if (!profile?.location_point) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/onboarding'
-      return NextResponse.redirect(url)
+      return redirectWithCookies('/onboarding')
     }
   }
 
@@ -61,9 +67,7 @@ export async function updateSession(request: NextRequest) {
       .maybeSingle()
 
     if (profile?.location_point) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/'
-      return NextResponse.redirect(url)
+      return redirectWithCookies('/')
     }
   }
 
