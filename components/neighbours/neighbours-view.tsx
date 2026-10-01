@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { RefreshCw } from "lucide-react"
+import { ListingInterestButton } from "@/components/listings/listing-interest-button"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 
@@ -43,6 +44,7 @@ type Props = {
   helpListings: HelpListing[]
   locationCity: string | null
   radiusKm: number
+  interestStatuses: Record<string, string>
 }
 
 const PLAY_CATEGORIES = [
@@ -81,6 +83,7 @@ export function NeighboursView({
   helpListings,
   locationCity,
   radiusKm,
+  interestStatuses,
 }: Props) {
   const router = useRouter()
   const [section, setSection] = useState<"neighbours" | "help">("neighbours")
@@ -284,8 +287,15 @@ export function NeighboursView({
                   </span>
                 )}
 
-                <div className="mt-4 border-t border-border pt-3 text-xs text-lahella-muted">
-                  {getTimeAgo(item.created_at)}
+                <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
+                  <span className="text-xs text-lahella-muted">{getTimeAgo(item.created_at)}</span>
+                  {item.user_id !== undefined && (
+                    <ListingInterestButton
+                      playListingId={section === "neighbours" ? item.id : undefined}
+                      helpListingId={section === "help" ? item.id : undefined}
+                      status={interestStatuses[section === "neighbours" ? "play:" + item.id : "help:" + item.id]}
+                    />
+                  )}
                 </div>
               </article>
             )
