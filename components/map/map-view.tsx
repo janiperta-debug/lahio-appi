@@ -31,7 +31,7 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
    async function load(){
      setLoading(true);setError('')
      try{
-       const r=await fetch('/api/map/places?radius_km=5',{cache:'no-store'})
+       const r=await fetch(`/api/map/places?radius_km=5&category=${encodeURIComponent(cat)}`,{cache:'no-store'})
        const d=await r.json()
        if(!r.ok) throw new Error(d.error||'Karttapaikkojen haku epäonnistui.')
        if(cancelled)return
