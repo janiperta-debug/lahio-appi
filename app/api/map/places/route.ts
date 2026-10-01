@@ -56,7 +56,7 @@ export async function GET(request: Request) {
 
   const nodes = filters.map(tag => `node${tag}(around:${radiusM},${lat},${lon});`).join('')
   const ways = filters.map(tag => `way${tag}(around:${radiusM},${lat},${lon});`).join('')
-  const query = `[out:json][timeout:20];(${nodes}${ways});out center tags 300;`
+  const query = `[out:json][timeout:20];(${nodes}${ways});out center tags;`
 
   let response: Response
   try {
