@@ -181,9 +181,9 @@ export function MyListingsView({ playListings, helpListings, interests, contacts
                     <p className="text-sm font-semibold text-lahella-text">Yhteydenotot</p>
                     <div className="mt-2 space-y-2">
                       {activeInterests.map((interest) => {
-                        const contact = contacts.find((item) =>
-                          item.participant_id === interest.user_id &&
-                          (tab === "play" ? item.play_listing_id === item.id : item.help_listing_id === item.id),
+                        const contact = contacts.find((contactItem) =>
+                          contactItem.participant_id === interest.user_id &&
+                          (tab === "play" ? contactItem.play_listing_id === item.id : contactItem.help_listing_id === item.id),
                         )
                         return (
                           <div key={interest.id} className="flex flex-col gap-2 rounded-xl bg-lahella-surface3 p-3 sm:flex-row sm:items-center sm:justify-between">
