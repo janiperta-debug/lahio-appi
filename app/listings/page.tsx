@@ -25,6 +25,17 @@ export default async function ListingsPage() {
   if (playError) throw new Error(playError.message)
   if (helpError) throw new Error(helpError.message)
 
+  const [{ data: interests }, { data: contacts }] = await Promise.all([
+    supabase
+      .from("listing_interests")
+      .select("id,play_listing_id,help_listing_id,user_id,status,created_at,profile:profiles!listing_interests_user_id_fkey(display_name,avatar_url)")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("listing_contacts")
+      .select("id,play_listing_id,help_listing_id,participant_id,closed_at")
+      .eq("owner_id", user.id),
+  ])
+
   const play = (playListings ?? []).map((item) => ({
     ...item,
     category: item.tags?.find((tag) => ["leikkikaverit", "harrastukset", "seniorit", "lemmikit"].includes(tag)) ?? null,
@@ -52,7 +63,7 @@ export default async function ListingsPage() {
             <a href="/create/listing?type=help" className="rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-lahella-text2">+ Apua</a>
           </div>
         </div>
-        <MyListingsView playListings={play} helpListings={help} />
+        <MyListingsView playListings={play} helpListings={help} interests={interests ?? []} contacts={contacts ?? []} />
       </section>
     </AppShell>
   )
