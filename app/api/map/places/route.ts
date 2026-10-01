@@ -43,8 +43,8 @@ export async function GET(request: Request) {
   const lat = Number(location[0].latitude)
   const lon = Number(location[0].longitude)
   const { searchParams } = new URL(request.url)
-  const requestedRadius = Number(searchParams.get('radius_km') ?? 5)
-  const radiusKm = Math.min(15, Math.max(0.5, Number.isFinite(requestedRadius) ? requestedRadius : 5))
+  const requestedRadius = Number(searchParams.get('radius_km') ?? 25)
+  const radiusKm = Math.min(50, Math.max(0.5, Number.isFinite(requestedRadius) ? requestedRadius : 25))
   const radiusM = Math.round(radiusKm * 1000)
   const selectedCategory = searchParams.get('category') ?? 'all'
 
