@@ -17,20 +17,58 @@ type Listing = {
   child_age_max: number | null
 }
 
+type Interest = {
+  id: string
+  play_listing_id: string | null
+  help_listing_id: string | null
+  user_id: string
+  status: string
+  created_at: string
+  profile: { display_name: string | null; avatar_url: string | null } | null
+}
+
+type Contact = {
+  id: string
+  play_listing_id: string | null
+  help_listing_id: string | null
+  participant_id: string
+  closed_at: string | null
+}
+
 type Props = {
   playListings: Listing[]
   helpListings: Listing[]
+  interests: Interest[]
+  contacts: Contact[]
 }
 
 function date(value: string | null) {
   return value ? new Date(value).toLocaleDateString("fi-FI") : ""
 }
 
-export function MyListingsView({ playListings, helpListings }: Props) {
+export function MyListingsView({ playListings, helpListings, interests, contacts }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<"play" | "help">("play")
   const [busy, setBusy] = useState<string | null>(null)
   const listings = tab === "play" ? playListings : helpListings
+
+  async function handleInterest(interestId: string, status: "accepted" | "declined") {
+    setBusy(interestId)
+    try {
+      const response = await fetch("/api/listing-interests/" + interestId, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error ?? "Käsittely epäonnistui.")
+      router.refresh()
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Käsittely epäonnistui.")
+    } finally {
+      setBusy(null)
+    }
+  }
 
   async function updateListing(item: Listing, status: "active" | "paused") {
     setBusy(item.id)
@@ -95,6 +133,10 @@ export function MyListingsView({ playListings, helpListings }: Props) {
         <div className="space-y-3">
           {listings.map((item) => {
             const paused = item.status === "paused"
+            const itemInterests = interests.filter((interest) =>
+              tab === "play" ? interest.play_listing_id === item.id : interest.help_listing_id === item.id,
+            )
+            const activeInterests = itemInterests.filter((interest) => interest.status === "pending" || interest.status === "accepted")
             return (
               <article key={item.id} className={`rounded-2xl border border-border bg-card p-5 ${paused ? "opacity-70" : ""}`}>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -133,6 +175,53 @@ export function MyListingsView({ playListings, helpListings }: Props) {
                     </button>
                   </div>
                 </div>
+
+                {activeInterests.length > 0 && (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <p className="text-sm font-semibold text-lahella-text">Yhteydenotot</p>
+                    <div className="mt-2 space-y-2">
+                      {activeInterests.map((interest) => {
+                        const contact = contacts.find((item) =>
+                          item.participant_id === interest.user_id &&
+                          (tab === "play" ? item.play_listing_id === item.id : item.help_listing_id === item.id),
+                        )
+                        return (
+                          <div key={interest.id} className="flex flex-col gap-2 rounded-xl bg-lahella-surface3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-lahella-text">{interest.profile?.display_name ?? "Naapuri"}</p>
+                              <p className="text-xs text-lahella-muted">{interest.status === "accepted" ? "Yhteydenotto avattu" : "Odottaa hyväksyntää"}</p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {interest.status === "pending" && (
+                                <>
+                                  <button
+                                    disabled={busy === interest.id}
+                                    onClick={() => handleInterest(interest.id, "accepted")}
+                                    className="rounded-lg bg-sage px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                                  >
+                                    Hyväksy
+                                  </button>
+                                  <button
+                                    disabled={busy === interest.id}
+                                    onClick={() => handleInterest(interest.id, "declined")}
+                                    className="rounded-lg bg-card px-3 py-2 text-xs font-semibold text-lahella-text2 disabled:opacity-50"
+                                  >
+                                    Hylkää
+                                  </button>
+                                </>
+                              )}
+                              {contact && (
+                                <Link href={"/contacts/" + contact.id} className="rounded-lg bg-card px-3 py-2 text-xs font-semibold text-terracotta">
+                                  Avaa keskustelu
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </article>
             )
           })}
