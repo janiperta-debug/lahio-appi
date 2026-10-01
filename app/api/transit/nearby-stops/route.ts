@@ -23,9 +23,19 @@ export async function GET(req:NextRequest) {
   const query={query:`{stopsByBbox(minLat:${lat-off},minLon:${lon-off},maxLat:${lat+off},maxLon:${lon+off}){gtfsId name lat lon stoptimesWithoutPatterns(numberOfDepartures:5){scheduledDeparture realtimeDeparture realtime serviceDay headsign trip{route{shortName longName mode}}}}}`}
   try {
     const res=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','digitransit-subscription-key':key},body:JSON.stringify(query),cache:'no-store'})
-    if(!res.ok)return NextResponse.json({error:'Lähiliikennetietojen haku epäonnistui.'},{status:502})
-    const json=await res.json()
-    if(json.errors?.length)return NextResponse.json({error:'Lähiliikennetietojen haku epäonnistui.'},{status:502})
+    const body=await res.text()
+    if(!res.ok){
+      return NextResponse.json({error:'Digitransit hylkäsi pyynnön.',details:`HTTP ${res.status}`},{status:502})
+    }
+    let json:any
+    try{json=JSON.parse(body)}catch{
+      return NextResponse.json({error:'Digitransit palautti virheellisen vastauksen.'},{status:502})
+    }
+    if(json.errors?.length){
+      console.error('Digitransit GraphQL error',json.errors)
+      const message=String(json.errors[0]?.message??'Tuntematon GraphQL-virhe')
+      return NextResponse.json({error:'Digitransit-haku epäonnistui.',details:message},{status:502})
+    }
     const stops=(json.data?.stopsByBbox??[]).map((s:any)=>{
       const ds=(s.stoptimesWithoutPatterns??[]).map((d:any)=>{const r=d.trip?.route??{},sch=Number(d.scheduledDeparture??0),real=Number(d.realtimeDeparture??sch);return {time:`${String(Math.floor(real/3600)%24).padStart(2,'0')}:${String(Math.floor(real%3600/60)).padStart(2,'0')}`,departure_ts:Number(d.serviceDay??0)+real,realtime:Boolean(d.realtime),delay_min:d.realtime?Math.round((real-sch)/60):0,headsign:d.headsign??'',route_short:r.shortName??'',route_long:r.longName??'',mode:r.mode??'BUS'}})
       const dm=distance(lat,lon,Number(s.lat),Number(s.lon))
