@@ -38,8 +38,11 @@ export async function updateSession(request: NextRequest) {
   const claims = claimsData?.claims ?? null
   const pathname = request.nextUrl.pathname
   const publicPath = pathname === '/login' || pathname === '/register' || pathname.startsWith('/auth/')
+  const apiPath = pathname.startsWith('/api/')
 
-  if (!claims && !publicPath) {
+  // API routes must handle authentication and return JSON themselves. Redirecting
+  // an API request to a page would make fetch() receive HTML instead of JSON.
+  if (!claims && !publicPath && !apiPath) {
     return redirectWithCookies('/login')
   }
 
@@ -47,7 +50,7 @@ export async function updateSession(request: NextRequest) {
     return redirectWithCookies('/')
   }
 
-  if (claims && !publicPath && pathname !== '/onboarding') {
+  if (claims && !publicPath && !apiPath && pathname !== '/onboarding') {
     const { data: profile } = await supabase
       .from('profiles')
       .select('location_point')
