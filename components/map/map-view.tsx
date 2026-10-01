@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
+import Link from 'next/link'\nimport { createClient } from '@/lib/supabase/client'
 
 type Place={id:string;name:string;category:string;address:string|null;location_city:string|null;latitude:number;longitude:number;distance_meters:number}
 type Center={latitude:number;longitude:number}
@@ -52,33 +52,71 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
  const [center,setCenter]=useState<Center|null>(initialCenter)
  const [loading,setLoading]=useState(true)
  const [error,setError]=useState('')
+ const supabase=useMemo(()=>createClient(),[])
 
  useEffect(()=>{
    let cancelled=false
-   async function load(){
-     setLoading(true);setError('')
+   let lastFetched:Center|null=null
+
+   const loadAt=async(lat:number,lon:number)=>{
+     if(cancelled)return
+     setLoading(true)
+     setError('')
      try{
-       const r=await fetch(`/api/map/places?radius_km=25&category=${encodeURIComponent(cat)}`,{cache:'no-store'})
-       const d=await r.json()
-       if(!r.ok) throw new Error(d.error||'Karttapaikkojen haku epäonnistui.')
+       const {data,error:invokeError}=await supabase.functions.invoke('map-places',{
+         body:{lat,lon,radiusKm:25,category:cat},
+       })
+       if(invokeError) throw invokeError
+       if(data?.error) throw new Error(data.error)
        if(cancelled)return
-       setPlaces(d.places??[])
-       if(d.center)setCenter(d.center)
+       setPlaces(data?.places??[])
+       setCenter(data?.center??{latitude:lat,longitude:lon})
+       lastFetched={latitude:lat,longitude:lon}
      }catch(e){
        if(!cancelled)setError(e instanceof Error?e.message:'Karttapaikkojen haku epäonnistui.')
      }finally{
        if(!cancelled)setLoading(false)
      }
    }
-   void load()
-   return ()=>{cancelled=true}
- },[cat])
+
+   const distanceKm=(a:Center,b:Center)=>{
+     const dLat=(b.latitude-a.latitude)*Math.PI/180
+     const dLon=(b.longitude-a.longitude)*Math.PI/180
+     const x=Math.sin(dLat/2)**2+Math.cos(a.latitude*Math.PI/180)*Math.cos(b.latitude*Math.PI/180)*Math.sin(dLon/2)**2
+     return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))
+   }
+
+   if(!navigator.geolocation){
+     if(initialCenter) void loadAt(initialCenter.latitude,initialCenter.longitude)
+     else setLoading(false)
+     return
+   }
+
+   const watchId=navigator.geolocation.watchPosition(
+     position=>{
+       const next={latitude:position.coords.latitude,longitude:position.coords.longitude}
+       if(!lastFetched || distanceKm(lastFetched,next)>=2){
+         void loadAt(next.latitude,next.longitude)
+       }
+     },
+     ()=>{
+       if(initialCenter) void loadAt(initialCenter.latitude,initialCenter.longitude)
+       else if(!cancelled)setLoading(false)
+     },
+     {enableHighAccuracy:true,maximumAge:60000,timeout:10000}
+   )
+
+   return()=>{
+     cancelled=true
+     navigator.geolocation.clearWatch(watchId)
+   }
+ },[cat,initialCenter,supabase])
 
  const filtered=useMemo(()=>cat==='all'?places:places.filter(p=>p.category===cat),[places,cat])
 
  return <section className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
   <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-   <div><p className="text-sm font-semibold text-terracotta">Lähellä</p><h1 className="font-serif text-3xl font-semibold text-lahella-text">Kartta</h1><p className="mt-2 text-sm text-lahella-text2">Lähialueen paikat ja palvelut.</p></div>
+   <div><p className="text-sm font-semibold text-terracotta">Lähellä</p><h1 className="font-serif text-3xl font-semibold text-lahella-text">Kartta</h1><p className="mt-2 text-sm text-lahella-text2">Paikat ja palvelut siellä missä olet.</p></div>
    <div className="flex rounded-xl border border-border bg-card p-1"><button onClick={()=>setView('map')} className={`rounded-lg px-3 py-2 text-sm ${view==='map'?'bg-terracotta text-white':''}`}>🗺️ Kartta</button><button onClick={()=>setView('list')} className={`rounded-lg px-3 py-2 text-sm ${view==='list'?'bg-terracotta text-white':''}`}>☷ Lista</button></div>
   </div>
   <div className="mb-4 flex gap-2 overflow-x-auto pb-1">{cats.map(([v,e,l])=><button key={v} onClick={()=>setCat(v)} className={`whitespace-nowrap rounded-full px-4 py-2 text-sm ${cat===v?'bg-terracotta text-white':'bg-white text-lahella-text2 ring-1 ring-border'}`}>{e} {l}</button>)}</div>
