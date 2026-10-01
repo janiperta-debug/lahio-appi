@@ -9,7 +9,7 @@ export default async function MapPage() {
   if (!claimsData?.claims?.sub) redirect('/login')
 
   const [{ data: places, error: placesError }, { data: location }] = await Promise.all([
-    supabase.rpc('get_nearby_map_places'),
+    supabase.rpc('get_map_places_discovery', { p_radius_km: 25, p_category: 'all' }),
     supabase.rpc('get_my_location_coordinates'),
   ])
 
