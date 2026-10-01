@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'\nimport { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
 type Place={id:string;name:string;category:string;address:string|null;location_city:string|null;latitude:number;longitude:number;distance_meters:number}
 type Center={latitude:number;longitude:number}
