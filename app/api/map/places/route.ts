@@ -50,38 +50,41 @@ export async function GET(request: Request) {
 
   const filterParts = selectedCategory === 'all'
     ? [
-        'nwr["leisure"~"playground|sports_centre|pitch|fitness_station|park|nature_reserve|swimming_pool|dog_park"](around:R,LAT,LON);',
-        'nwr["boundary"="national_park"](around:R,LAT,LON);',
-        'nwr["sport"="swimming"](around:R,LAT,LON);',
-        'nwr["amenity"~"public_bath|library|theatre|community_centre"](around:R,LAT,LON);',
-        'nwr["tourism"="museum"](around:R,LAT,LON);',
+        'nwr["leisure"~"playground|sports_centre|pitch|fitness_station|park|nature_reserve|swimming_pool|dog_park"]["name"](around:R,LAT,LON);',
+        'nwr["boundary"="national_park"]["name"](around:R,LAT,LON);',
+        'nwr["sport"="swimming"]["name"](around:R,LAT,LON);',
+        'nwr["amenity"~"public_bath|library|theatre|community_centre"]["name"](around:R,LAT,LON);',
+        'nwr["tourism"="museum"]["name"](around:R,LAT,LON);',
       ]
     : selectedCategory === 'playground'
       ? ['nwr["leisure"="playground"](around:R,LAT,LON);']
       : selectedCategory === 'sports'
         ? ['nwr["leisure"~"sports_centre|pitch|fitness_station"](around:R,LAT,LON);']
         : selectedCategory === 'nature'
-          ? ['nwr["leisure"~"park|nature_reserve"](around:R,LAT,LON);','nwr["boundary"="national_park"](around:R,LAT,LON);']
+          ? ['nwr["leisure"~"park|nature_reserve"](around:R,LAT,LON);','nwr["boundary"="national_park"]["name"](around:R,LAT,LON);']
           : selectedCategory === 'swimming'
-            ? ['nwr["leisure"="swimming_pool"](around:R,LAT,LON);','nwr["sport"="swimming"](around:R,LAT,LON);','nwr["amenity"="public_bath"](around:R,LAT,LON);']
+            ? ['nwr["leisure"="swimming_pool"](around:R,LAT,LON);','nwr["sport"="swimming"]["name"](around:R,LAT,LON);','nwr["amenity"="public_bath"](around:R,LAT,LON);']
             : selectedCategory === 'pets'
               ? ['nwr["leisure"="dog_park"](around:R,LAT,LON);']
               : selectedCategory === 'culture'
-                ? ['nwr["amenity"~"library|theatre|community_centre"](around:R,LAT,LON);','nwr["tourism"="museum"](around:R,LAT,LON);']
+                ? ['nwr["amenity"~"library|theatre|community_centre"](around:R,LAT,LON);','nwr["tourism"="museum"]["name"](around:R,LAT,LON);']
                 : []
 
   if (!filterParts.length) return NextResponse.json({ places: [], center: { latitude: lat, longitude: lon } })
 
-  const query = `[out:json][timeout:45];(${filterParts.map(part => part.replaceAll('R', String(radiusM)).replaceAll('LAT', String(lat)).replaceAll('LON', String(lon))).join('')});out center tags;`
+  const query = `[out:json][timeout:15];(${filterParts.map(part => part.replaceAll('R', String(radiusM)).replaceAll('LAT', String(lat)).replaceAll('LON', String(lon))).join('')});out center tags;`
   const overpassEndpoints = [
     'https://overpass-api.de/api/interpreter',
     'https://overpass.kumi.systems/api/interpreter',
   ]
 
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 12000)
+
   let response: Response | null = null
-  for (const endpoint of overpassEndpoints) {
-    try {
-      const candidate = await fetch(endpoint, {
+  try {
+    const results = await Promise.allSettled(overpassEndpoints.map(endpoint =>
+      fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -89,14 +92,14 @@ export async function GET(request: Request) {
         },
         body: new URLSearchParams({ data: query }),
         cache: 'no-store',
+        signal: controller.signal,
       })
-      if (candidate.ok) {
-        response = candidate
-        break
-      }
-    } catch {
-      // Try the next public Overpass instance.
-    }
+    ))
+    response = results
+      .map(result => result.status === 'fulfilled' ? result.value : null)
+      .find(candidate => candidate?.ok) ?? null
+  } finally {
+    clearTimeout(timeout)
   }
 
   if (!response) {
