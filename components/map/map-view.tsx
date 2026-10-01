@@ -65,12 +65,13 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
      setError('')
      try{
        const {data,error:invokeError}=await supabase.functions.invoke('map-places',{
-         body:{lat,lon,radiusKm:25,category:cat},
+         body:{lat,lon,radiusKm:10,category:cat},
        })
        if(invokeError) throw invokeError
        if(data?.error) throw new Error(data.error)
        if(cancelled)return
        setPlaces(data?.places??[])
+       if(data?.refreshError) setError(`Paikkojen päivitys epäonnistui: ${data.refreshError}`)
        setCenter(data?.center??{latitude:lat,longitude:lon})
        lastFetched={latitude:lat,longitude:lon}
      }catch(e){
