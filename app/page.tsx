@@ -42,6 +42,19 @@ export default async function Home() {
   if (playError) throw new Error(playError.message)
   if (helpError) throw new Error(helpError.message)
 
+  const { data: interests } = await supabase
+    .from("listing_interests")
+    .select("play_listing_id,help_listing_id,status")
+    .eq("user_id", user.id)
+    .neq("status", "withdrawn")
+
+  const interestStatuses = Object.fromEntries(
+    (interests ?? []).map((item) => [
+      item.play_listing_id ? "play:" + item.play_listing_id : "help:" + item.help_listing_id,
+      item.status,
+    ]),
+  )
+
   return (
     <AppShell>
       <NeighboursView
@@ -49,6 +62,7 @@ export default async function Home() {
         helpListings={helpListings ?? []}
         locationCity={profile?.location_city ?? null}
         radiusKm={Number(profile?.search_radius_km ?? 5)}
+        interestStatuses={interestStatuses}
       />
     </AppShell>
   )
