@@ -14,20 +14,50 @@ export async function POST(request: Request) {
 
   const radiusKm = Math.min(100, Math.max(0.5, Number(body.radiusKm ?? 5)))
   const params = new URLSearchParams({
-    q: address, format: 'json', limit: '1', countrycodes: 'fi', addressdetails: '1',
+    q: address,
+    format: 'jsonv2',
+    limit: '1',
+    countrycodes: 'fi',
+    addressdetails: '1',
   })
 
-  const geocodeResponse = await fetch(
-    `https://nominatim.openstreetmap.org/search?${params.toString()}`,
-    { headers: { 'User-Agent': 'Lahella/1.0' }, cache: 'no-store' }
-  )
-  if (!geocodeResponse.ok) return NextResponse.json({ error: 'Sijainnin hakeminen epäonnistui.' }, { status: 502 })
+  let geocodeResponse: Response
+  try {
+    geocodeResponse = await fetch(
+      `https://nominatim.openstreetmap.org/search?${params.toString()}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'Lahella/1.0',
+          Referer: new URL(request.url).origin,
+        },
+        cache: 'no-store',
+      }
+    )
+  } catch {
+    return NextResponse.json({ error: 'Sijaintipalveluun ei saatu yhteyttä.' }, { status: 502 })
+  }
 
-  const results = (await geocodeResponse.json()) as Array<{
+  if (!geocodeResponse.ok) {
+    return NextResponse.json({ error: 'Sijaintipalvelu ei vastannut.' }, { status: 502 })
+  }
+
+  let results: Array<{
     lat: string
     lon: string
     address?: { city?: string; town?: string; municipality?: string; village?: string }
   }>
+
+  try {
+    results = (await geocodeResponse.json()) as Array<{
+      lat: string
+      lon: string
+      address?: { city?: string; town?: string; municipality?: string; village?: string }
+    }>
+  } catch {
+    return NextResponse.json({ error: 'Sijaintipalvelu palautti virheellisen vastauksen.' }, { status: 502 })
+  }
+
   const result = results[0]
   if (!result) return NextResponse.json({ error: 'Sijaintia ei löytynyt.' }, { status: 404 })
 
