@@ -8,18 +8,14 @@ export default async function MapPage() {
   const { data: claimsData } = await supabase.auth.getClaims()
   if (!claimsData?.claims?.sub) redirect('/login')
 
-  const [{ data: places, error: placesError }, { data: location }] = await Promise.all([
-    supabase.rpc('get_map_places_discovery', { p_radius_km: 25, p_category: 'all' }),
-    supabase.rpc('get_my_location_coordinates'),
-  ])
-
+  const { data: location } = await supabase.rpc('get_my_location_coordinates')
   const center = location?.[0]
     ? { latitude: Number(location[0].latitude), longitude: Number(location[0].longitude) }
     : null
 
   return (
     <AppShell>
-      <MapView places={placesError ? [] : (places ?? [])} initialCenter={center} />
+      <MapView places={[]} initialCenter={center} />
     </AppShell>
   )
 }
