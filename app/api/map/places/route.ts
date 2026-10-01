@@ -83,8 +83,8 @@ export async function GET(request: Request) {
 
   let response: Response | null = null
   try {
-    const results = await Promise.allSettled(overpassEndpoints.map(endpoint =>
-      fetch(endpoint, {
+    response = await Promise.any(overpassEndpoints.map(async endpoint => {
+      const candidate = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -94,10 +94,12 @@ export async function GET(request: Request) {
         cache: 'no-store',
         signal: controller.signal,
       })
-    ))
-    response = results
-      .map(result => result.status === 'fulfilled' ? result.value : null)
-      .find(candidate => candidate?.ok) ?? null
+      if (!candidate.ok) throw new Error('Overpass request failed')
+      return candidate
+    }))
+    controller.abort()
+  } catch {
+    response = null
   } finally {
     clearTimeout(timeout)
   }
