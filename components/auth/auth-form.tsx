@@ -14,6 +14,25 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+
+  async function handleGoogleSignIn() {
+    setGoogleLoading(true)
+    setError('')
+    setMessage('')
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setGoogleLoading(false)
+    }
+  }
 
   async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
@@ -54,6 +73,16 @@ export function AuthForm({ mode }: { mode: Mode }) {
               : 'Luo tili ja löydä ihmisiä, tapahtumia ja naapuriapua läheltäsi.'}
           </p>
 
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={googleLoading || loading}
+            className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-background px-4 py-3 font-semibold text-lahella-text disabled:opacity-60"
+          >
+            <span className="text-base font-bold">G</span>
+            {googleLoading ? 'Hetkinen…' : 'Jatka Google-tilillä'}
+          </button>
+
           <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
             <span className="text-xs font-medium text-lahella-muted">tai sähköpostilla</span>
@@ -85,7 +114,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
             {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
             {message && <p className="rounded-xl bg-sage/10 px-4 py-3 text-sm text-lahella-text2">{message}</p>}
 
-            <button disabled={loading}
+            <button disabled={loading || googleLoading}
               className="w-full rounded-xl bg-terracotta px-4 py-3 font-semibold text-white disabled:opacity-60">
               {loading ? 'Hetkinen…' : mode === 'login' ? 'Kirjaudu' : 'Luo tili'}
             </button>
