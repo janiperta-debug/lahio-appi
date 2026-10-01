@@ -88,17 +88,25 @@ async function readPlaces(lat: number, lon: number, radiusKm: number, category: 
 
 async function refreshFromOsm(lat: number, lon: number, radiusKm: number, category: string) {
   const radiusM = Math.min(radiusKm, MAX_RADIUS_KM) * 1000
+  const overpassQuery = queryFor(lat, lon, radiusM, category)
+
+  // Match the working Expo implementation: Overpass receives form data,
+  // not a raw text/plain request.
+  const body = new URLSearchParams({ data: overpassQuery })
+
   const response = await fetch(OVERPASS_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "text/plain",
       "User-Agent": "Lahella/1.0 (community app)",
     },
-    body: queryFor(lat, lon, radiusM, category),
+    body,
     signal: AbortSignal.timeout(25000),
   })
 
-  if (!response.ok) throw new Error(`Overpass: ${response.status}`)
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "")
+    throw new Error(`Overpass: ${response.status}${detail ? ` ${detail.slice(0, 120)}` : ""}`)
+  }
 
   const json = await response.json()
   const places = json.elements.map(normalize).filter(Boolean)
