@@ -6,7 +6,12 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 )
 
-const OVERPASS_URL = Deno.env.get("OVERPASS_URL") || "https://overpass-api.de/api/interpreter"
+const OVERPASS_URLS = [
+  Deno.env.get("OVERPASS_URL"),
+  "https://overpass.private.coffee/api/interpreter",
+  "https://overpass-api.de/api/interpreter",
+].filter(Boolean) as string[]
+
 const DEFAULT_RADIUS_KM = 10
 const MAX_RADIUS_KM = 15
 
@@ -59,7 +64,6 @@ function normalize(element: any) {
   const tags = element.tags || {}
   const lat = element.lat ?? element.center?.lat
   const lon = element.lon ?? element.center?.lon
-
   if (!element.id || !tags.name || lat == null || lon == null) return null
 
   return {
@@ -89,34 +93,44 @@ async function readPlaces(lat: number, lon: number, radiusKm: number, category: 
 async function refreshFromOsm(lat: number, lon: number, radiusKm: number, category: string) {
   const radiusM = Math.min(radiusKm, MAX_RADIUS_KM) * 1000
   const overpassQuery = queryFor(lat, lon, radiusM, category)
-
-  // Match the working Expo implementation: Overpass receives form data,
-  // not a raw text/plain request.
   const body = new URLSearchParams({ data: overpassQuery })
+  let lastError = "Overpass API error"
 
-  const response = await fetch(OVERPASS_URL, {
-    method: "POST",
-    headers: {
-      "User-Agent": "Lahella/1.0 (community app)",
-    },
-    body,
-    signal: AbortSignal.timeout(25000),
-  })
+  for (const url of OVERPASS_URLS) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "User-Agent": "Lahella/1.0 (community app; https://www.janope.fi/)",
+          "Accept": "application/json",
+        },
+        body,
+        signal: AbortSignal.timeout(25000),
+      })
 
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "")
-    throw new Error(`Overpass: ${response.status}${detail ? ` ${detail.slice(0, 120)}` : ""}`)
+      if (!response.ok) {
+        const detail = await response.text().catch(() => "")
+        lastError = `Overpass: ${response.status}`
+        console.warn(`Overpass endpoint failed (${url}): ${response.status}`, detail.slice(0, 120))
+        continue
+      }
+
+      const json = await response.json()
+      const places = json.elements.map(normalize).filter(Boolean)
+
+      if (places.length) {
+        const { error } = await supabase.from("map_places").upsert(places, { onConflict: "osm_id" })
+        if (error) throw error
+      }
+
+      return places.length
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error)
+      console.warn(`Overpass endpoint failed (${url})`, lastError)
+    }
   }
 
-  const json = await response.json()
-  const places = json.elements.map(normalize).filter(Boolean)
-
-  if (places.length) {
-    const { error } = await supabase.from("map_places").upsert(places, { onConflict: "osm_id" })
-    if (error) throw error
-  }
-
-  return places.length
+  throw new Error(lastError)
 }
 
 Deno.serve(async (req) => {
