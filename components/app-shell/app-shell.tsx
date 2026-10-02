@@ -1,8 +1,9 @@
 import Link from "next/link"
-import { Bell, CalendarDays, UserRound, Users } from "lucide-react"
+import { Bell, CalendarDays, Home, UserRound, Users } from "lucide-react"
 
 const navItems = [
-  { href: "/", label: "Naapurit", icon: Users },
+  { href: "/", label: "Yleiskuva", icon: Home },
+  { href: "/neighbours", label: "Naapurit", icon: Users },
   { href: "/events", label: "Tapahtumat", icon: CalendarDays },
   { href: "/profile", label: "Profiili", icon: UserRound },
 ]
