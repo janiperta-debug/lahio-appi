@@ -71,81 +71,18 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <div>
-          <section className="self-start h-fit rounded-2xl border border-border bg-card p-4 sm:p-5">
-            <div className="mb-3 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-terracotta">Uutta alueella</p>
-                <h2 className="mt-1 font-serif text-2xl font-semibold text-lahella-text">Viimeisimmät julkaisut</h2>
-              </div>
-              <Link href="/listings" className="text-sm font-semibold text-terracotta">Kaikki →</Link>
-            </div>
-
-            {data.listings.length === 0 ? (
-              <div className="rounded-xl bg-lahella-surface3 px-3 py-3 text-center h-fit min-h-0">
-                <div className="text-2xl">🌿</div>
-                <p className="mt-2 font-semibold text-lahella-text">Alueella ei ole vielä julkaisuja</p>
-                <p className="mt-1 text-sm text-lahella-text2">Ole ensimmäinen, joka julkaisee jotain lähialueelle.</p>
-                <Link href="/create/listing?type=play" className="mt-3 inline-flex rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white">
-                  Luo ilmoitus
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {data.listings.map((item) => (
-                  <Link
-                    key={item.type + item.id}
-                    href="/listings"
-                    className="flex gap-3 rounded-xl border border-border p-3 transition hover:bg-lahella-surface3"
-                  >
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-terracotta-faint text-lg">
-                      {listingIcon(item)}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-lahella-text">{item.title}</span>
-                        <span className="rounded-full bg-lahella-surface3 px-2 py-0.5 text-[0.65rem] font-semibold text-lahella-text2">
-                          {listingLabel(item)}
-                        </span>
-                      </div>
-                      <p className="mt-1 line-clamp-1 text-sm text-lahella-text2">{item.description}</p>
-                      <p className="mt-1 text-xs text-lahella-muted">
-                        {item.display_name || "Naapuri"} · {relativeTime(item.created_at)}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
-
-        </div>
-
-        <div>
           <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-            <div className="mb-4 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-sage">Kalenterissa</p>
-                <h2 className="mt-1 font-serif text-2xl font-semibold text-lahella-text">Tulevat tapahtumat</h2>
-              </div>
-              <Link href="/events" className="text-sm font-semibold text-terracotta">Kaikki →</Link>
+            <p className="text-xs font-semibold uppercase tracking-wider text-sage">Kalenterissa</p>
+            <div className="mt-1 flex items-baseline gap-3">
+              <h2 className="font-serif text-2xl font-semibold text-lahella-text">Tapahtumat</h2>
+              <span className="text-sm text-lahella-text2">{data.event_count} tulossa</span>
             </div>
-
-            {data.events.length === 0 ? (
-              <div className="rounded-xl bg-lahella-surface3 px-3 py-3 text-center">
-                <div className="text-2xl">📅</div>
-                <p className="mt-2 font-semibold text-lahella-text">Ei tulevia tapahtumia</p>
-                <p className="mt-1 text-sm text-lahella-text2">Järjestä jotain omalle alueellesi.</p>
-                <Link href="/create/event" className="mt-3 inline-flex rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white">
-                  Luo tapahtuma
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {data.events.map((event: HomeEvent) => (
-                  <Link
+            {data.events.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {data.events.slice(0, 3).map((event: HomeEvent) => (
+                  <div
                     key={event.id}
-                    href={`/events/${event.id}`}
-                    className="block rounded-xl border border-border p-3 transition hover:bg-lahella-surface3"
+                    className="rounded-xl border border-border p-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -158,7 +95,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
                       {event.location_address && <span>📍 {event.location_address}</span>}
                       <span>👥 {event.participant_count}{event.max_participants ? ` / ${event.max_participants}` : ""}</span>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
