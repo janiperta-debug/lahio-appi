@@ -1,7 +1,6 @@
 import Link from "next/link"
 import type { HomeEvent, HomeListing, HomeOverviewData } from "@/app/page"
 import { TransitHomeCard } from "@/components/home/transit-home-card"
-import { NearbyPlacesHomeCard } from "@/components/home/nearby-places-home-card"
 
 function relativeTime(value: string) {
   const diff = Math.max(0, Date.now() - new Date(value).getTime())
@@ -81,9 +80,8 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
           <p className="mt-1 text-sm font-semibold leading-tight text-lahella-text sm:text-base">Tulevaa tapahtumaa</p>
         </div>
       </div>
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+      <div className="mt-6">
         <TransitHomeCard />
-        <NearbyPlacesHomeCard />
       </div>
     </section>
   )
