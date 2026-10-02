@@ -71,7 +71,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="mb-4 flex items-end justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-terracotta">Uutta alueella</p>
@@ -81,11 +81,11 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
             </div>
 
             {data.listings.length === 0 ? (
-              <div className="rounded-xl bg-lahella-surface3 p-6 text-center">
-                <div className="text-3xl">🌿</div>
+              <div className="rounded-xl bg-lahella-surface3 p-4 text-center">
+                <div className="text-2xl">🌿</div>
                 <p className="mt-2 font-semibold text-lahella-text">Alueella ei ole vielä julkaisuja</p>
                 <p className="mt-1 text-sm text-lahella-text2">Ole ensimmäinen, joka julkaisee jotain lähialueelle.</p>
-                <Link href="/create/listing?type=play" className="mt-4 inline-flex rounded-xl bg-terracotta px-4 py-2.5 text-sm font-semibold text-white">
+                <Link href="/create/listing?type=play" className="mt-3 inline-flex rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white">
                   Luo ilmoitus
                 </Link>
               </div>
@@ -129,7 +129,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
 
             {data.events.length === 0 ? (
               <div className="rounded-xl bg-lahella-surface3 p-6 text-center">
-                <div className="text-3xl">📅</div>
+                <div className="text-2xl">📅</div>
                 <p className="mt-2 font-semibold text-lahella-text">Ei tulevia tapahtumia</p>
                 <p className="mt-1 text-sm text-lahella-text2">Järjestä jotain omalle alueellesi.</p>
                 <Link href="/create/event" className="mt-4 inline-flex rounded-xl bg-terracotta px-4 py-2.5 text-sm font-semibold text-white">
