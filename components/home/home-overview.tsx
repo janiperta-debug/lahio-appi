@@ -118,48 +118,6 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
             )}
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-            <div className="mb-4 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-sage">Kalenterissa</p>
-                <h2 className="mt-1 font-serif text-2xl font-semibold text-lahella-text">Tulevat tapahtumat</h2>
-              </div>
-              <Link href="/events" className="text-sm font-semibold text-terracotta">Kaikki →</Link>
-            </div>
-
-            {data.events.length === 0 ? (
-              <div className="rounded-xl bg-lahella-surface3 px-3 py-3 text-center">
-                <div className="text-2xl">📅</div>
-                <p className="mt-2 font-semibold text-lahella-text">Ei tulevia tapahtumia</p>
-                <p className="mt-1 text-sm text-lahella-text2">Järjestä jotain omalle alueellesi.</p>
-                <Link href="/create/event" className="mt-3 inline-flex rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white">
-                  Luo tapahtuma
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {data.events.map((event: HomeEvent) => (
-                  <Link
-                    key={event.id}
-                    href={`/events/${event.id}`}
-                    className="block rounded-xl border border-border p-3 transition hover:bg-lahella-surface3"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <span className="text-xs font-semibold text-sage">{event.category || "Tapahtuma"}</span>
-                        <h3 className="mt-1 font-semibold text-lahella-text">{event.title}</h3>
-                      </div>
-                      <span className="shrink-0 text-xs font-semibold text-lahella-muted">{eventTime(event.starts_at)}</span>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-lahella-text2">
-                      {event.location_address && <span>📍 {event.location_address}</span>}
-                      <span>👥 {event.participant_count}{event.max_participants ? ` / ${event.max_participants}` : ""}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
         </div>
 
         <div>
