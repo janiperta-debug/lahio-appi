@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-const OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter"
+const OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
 function distance(a: number, b: number, c: number, d: number) {
   const R = 6371000
@@ -54,6 +54,7 @@ out center tags;`
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": "Lahella/1.0 (https://www.janope.fi/)",
+        "Accept": "application/json",
       },
       body: new URLSearchParams({ data: query }),
       cache: "no-store",
