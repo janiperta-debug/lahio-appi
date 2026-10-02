@@ -55,7 +55,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
       </header>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <div className="rounded-2xl border border-border bg-card p-2.5 sm:p-3">
+        <div className="self-start h-fit rounded-2xl border border-border bg-card p-2.5 sm:p-3">
           <p className="text-xl font-semibold text-terracotta sm:text-2xl">{data.member_count}</p>
           <p className="mt-0.5 text-[0.7rem] font-semibold leading-tight text-lahella-text sm:text-xs">Liittynyttä lähialueella</p>
         </div>
@@ -71,7 +71,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+          <section className="self-start h-fit rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-terracotta">Uutta alueella</p>
@@ -81,7 +81,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
             </div>
 
             {data.listings.length === 0 ? (
-              <div className="rounded-xl bg-lahella-surface3 px-3 py-3 text-center">
+              <div className="rounded-xl bg-lahella-surface3 px-3 py-3 text-center h-fit min-h-0">
                 <div className="text-2xl">🌿</div>
                 <p className="mt-2 font-semibold text-lahella-text">Alueella ei ole vielä julkaisuja</p>
                 <p className="mt-1 text-sm text-lahella-text2">Ole ensimmäinen, joka julkaisee jotain lähialueelle.</p>
