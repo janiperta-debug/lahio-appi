@@ -54,22 +54,19 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
         </p>
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Link href="/neighbours" className="rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:shadow-md">
-          <p className="text-3xl font-semibold text-terracotta">{data.member_count}</p>
-          <p className="mt-1 text-sm font-semibold text-lahella-text">Liittynyttä lähialueella</p>
-          <p className="mt-1 text-xs text-lahella-muted">Näe alueesi naapurit →</p>
-        </Link>
-        <Link href="/listings" className="rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:shadow-md">
-          <p className="text-3xl font-semibold text-terracotta">{data.listing_count}</p>
-          <p className="mt-1 text-sm font-semibold text-lahella-text">Aktiivista ilmoitusta</p>
-          <p className="mt-1 text-xs text-lahella-muted">Katso ilmoitukset →</p>
-        </Link>
-        <Link href="/events" className="rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:shadow-md">
-          <p className="text-3xl font-semibold text-terracotta">{data.event_count}</p>
-          <p className="mt-1 text-sm font-semibold text-lahella-text">Tulevaa tapahtumaa</p>
-          <p className="mt-1 text-xs text-lahella-muted">Katso tapahtumat →</p>
-        </Link>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.member_count}</p>
+          <p className="mt-1 text-xs font-semibold leading-tight text-lahella-text sm:text-sm">Liittynyttä lähialueella</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.listing_count}</p>
+          <p className="mt-1 text-xs font-semibold leading-tight text-lahella-text sm:text-sm">Aktiivista ilmoitusta</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.event_count}</p>
+          <p className="mt-1 text-xs font-semibold leading-tight text-lahella-text sm:text-sm">Tulevaa tapahtumaa</p>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
