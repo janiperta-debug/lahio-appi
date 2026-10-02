@@ -1,6 +1,7 @@
+'use client'
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 
 type Place={id:string;name:string;category:string;address:string|null;location_city:string|null;latitude:number;longitude:number;distance_meters:number}
 type Center={latitude:number;longitude:number}
@@ -51,7 +52,6 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
  const [center,setCenter]=useState<Center|null>(initialCenter)
  const [loading,setLoading]=useState(true)
  const [error,setError]=useState('')
- const supabase=useMemo(()=>createClient(),[])
  const mapRequestInFlight=useRef(false)
 
  useEffect(()=>{
@@ -119,7 +119,7 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
      cancelled=true
      navigator.geolocation.clearWatch(watchId)
    }
- },[cat,initialCenter,supabase])
+ },[cat,initialCenter])
 
  const filtered=useMemo(()=>cat==='all'?places:places.filter(p=>p.category===cat),[places,cat])
 
