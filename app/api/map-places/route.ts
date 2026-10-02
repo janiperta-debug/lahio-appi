@@ -1,18 +1,44 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-const BACKEND_URL =
-  process.env.LAHELLA_BACKEND_URL ||
-  process.env.EXPO_PUBLIC_BACKEND_URL ||
-  'https://supabase-starter-4.preview.emergentagent.com'
+const OVERPASS_CATEGORY_TAGS: Record<string, string[]> = {
+  playground: ['["leisure"="playground"]'],
+  sports: ['["leisure"="sports_centre"]', '["leisure"="pitch"]', '["leisure"="fitness_station"]'],
+  nature: ['["leisure"="park"]', '["leisure"="nature_reserve"]', '["boundary"="national_park"]'],
+  swimming: ['["leisure"="swimming_pool"]', '["sport"="swimming"]', '["amenity"="public_bath"]'],
+  pets: ['["leisure"="dog_park"]'],
+  culture: ['["amenity"="library"]', '["amenity"="theatre"]', '["tourism"="museum"]', '["amenity"="community_centre"]'],
+}
 
-type BackendPlace = {
-  name?: string
-  category?: string
-  address?: string
-  city?: string
-  latitude?: number
-  longitude?: number
+type OSMElement = {
+  id?: number
+  lat?: number
+  lon?: number
+  center?: { lat?: number; lon?: number }
+  tags?: Record<string, string>
+}
+
+function osmCategory(tags: Record<string, string>): string {
+  if (tags.leisure === 'playground') return 'playground'
+  if (['sports_centre', 'pitch', 'fitness_station'].includes(tags.leisure)) return 'sports'
+  if (['park', 'nature_reserve'].includes(tags.leisure) || tags.boundary === 'national_park') {
+    return 'nature'
+  }
+  if (
+    tags.leisure === 'swimming_pool' ||
+    tags.sport === 'swimming' ||
+    tags.amenity === 'public_bath'
+  ) {
+    return 'swimming'
+  }
+  if (tags.leisure === 'dog_park') return 'pets'
+  if (
+    ['library', 'theatre', 'community_centre'].includes(tags.amenity) ||
+    tags.tourism === 'museum'
+  ) {
+    return 'culture'
+  }
+  return 'other'
 }
 
 function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -31,9 +57,8 @@ function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number) 
 export async function GET(request: Request) {
   const supabase = await createClient()
   const { data: sessionData } = await supabase.auth.getSession()
-  const accessToken = sessionData.session?.access_token
 
-  if (!accessToken) {
+  if (!sessionData.session) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
@@ -43,66 +68,108 @@ export async function GET(request: Request) {
   const radiusKm = Number(searchParams.get('radius_km') || '10')
   const category = searchParams.get('category') || 'all'
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    lat < -90 ||
+    lat > 90 ||
+    lon < -180 ||
+    lon > 180
+  ) {
     return NextResponse.json({ error: 'Invalid GPS coordinates' }, { status: 400 })
   }
 
-  const params = new URLSearchParams({
-    lat: String(lat),
-    lon: String(lon),
-    radius_km: String(Math.min(Math.max(radiusKm || 10, 1), 15)),
-  })
+  const radius = Math.min(Math.max(Number.isFinite(radiusKm) ? radiusKm : 10, 1), 15)
+  const radiusMeters = Math.round(radius * 1000)
 
-  if (category !== 'all') params.set('category', category)
+  const tagFilters =
+    category !== 'all' && OVERPASS_CATEGORY_TAGS[category]
+      ? OVERPASS_CATEGORY_TAGS[category]
+      : Object.values(OVERPASS_CATEGORY_TAGS).flat()
+
+  const nodeQueries = tagFilters
+    .map((tag) => `node${tag}(around:${radiusMeters},${lat},${lon});`)
+    .join('')
+  const wayQueries = tagFilters
+    .map((tag) => `way${tag}(around:${radiusMeters},${lat},${lon});`)
+    .join('')
+
+  const overpassQuery =
+    `[out:json][timeout:15];(${nodeQueries}${wayQueries});out center tags 200;`
 
   try {
-    const response = await fetch(
-      `${BACKEND_URL.replace(/\/$/, '')}/api/map-places/fetch-osm?${params.toString()}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: 'application/json',
-        },
-        cache: 'no-store',
-      }
-    )
+    const response = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        Accept: 'application/json',
+        'User-Agent': 'Lahella/1.0 (community app)',
+        Referer: new URL(request.url).origin,
+      },
+      body: new URLSearchParams({ data: overpassQuery }),
+      cache: 'no-store',
+    })
 
     const payload = await response.json().catch(() => null)
 
     if (!response.ok) {
-      const message =
-        typeof payload?.detail === 'string'
-          ? payload.detail
-          : `Backend returned ${response.status}`
+      console.error('Overpass returned', response.status, payload)
       return NextResponse.json(
-        { error: message },
-        { status: response.status >= 500 ? 502 : response.status }
+        { error: `Overpass API error (${response.status})` },
+        { status: 502 }
       )
     }
 
-    const places = ((payload?.places || []) as BackendPlace[])
+    const places = (Array.isArray(payload?.elements) ? payload.elements : [])
+      .map((element: OSMElement, index: number) => {
+        const latitude = element.lat ?? element.center?.lat
+        const longitude = element.lon ?? element.center?.lon
+        const tags = element.tags ?? {}
+        const name = tags.name
+
+        if (
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude) ||
+          !name
+        ) {
+          return null
+        }
+
+        const categoryName = osmCategory(tags)
+        const address = [tags['addr:street'], tags['addr:housenumber']]
+          .filter(Boolean)
+          .join(' ')
+
+        return {
+          id: `osm-${element.id ?? index}`,
+          name,
+          category: categoryName,
+          address: address || null,
+          location_city: tags['addr:city'] || null,
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+          distance_meters: distanceMeters(
+            lat,
+            lon,
+            Number(latitude),
+            Number(longitude)
+          ),
+        }
+      })
       .filter(
-        (place) =>
-          Number.isFinite(place.latitude) &&
-          Number.isFinite(place.longitude) &&
-          typeof place.name === 'string'
+        (
+          place
+        ): place is {
+          id: string
+          name: string
+          category: string
+          address: string | null
+          location_city: string | null
+          latitude: number
+          longitude: number
+          distance_meters: number
+        } => place !== null
       )
-      .map((place, index) => ({
-        id: `osm-${place.category || 'place'}-${place.latitude}-${place.longitude}-${index}`,
-        name: place.name,
-        category: place.category || 'other',
-        address: place.address || null,
-        location_city: place.city || null,
-        latitude: Number(place.latitude),
-        longitude: Number(place.longitude),
-        distance_meters: distanceMeters(
-          lat,
-          lon,
-          Number(place.latitude),
-          Number(place.longitude)
-        ),
-      }))
       .sort((a, b) => a.distance_meters - b.distance_meters)
 
     return NextResponse.json({
@@ -111,9 +178,9 @@ export async function GET(request: Request) {
       count: places.length,
     })
   } catch (error) {
-    console.error('Map backend request failed:', error)
+    console.error('Direct Overpass request failed:', error)
     return NextResponse.json(
-      { error: 'Karttapaikkojen backend-haku epäonnistui.' },
+      { error: 'Overpass API -haku epäonnistui.' },
       { status: 502 }
     )
   }
