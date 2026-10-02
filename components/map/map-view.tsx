@@ -133,6 +133,5 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
   {view==='map'?<div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"><iframe title="Lähialueen kartta" className="h-[520px] w-full border-0" srcDoc={mapHtml(filtered,center)} /></div>:
   <div className="grid gap-3 md:grid-cols-2">{filtered.map(p=><div key={p.id} className="rounded-2xl border border-border bg-card p-4"><div className="flex gap-3"><span className="text-2xl">{emoji[p.category]||'📍'}</span><div><h2 className="font-semibold text-lahella-text">{p.name}</h2><p className="mt-1 text-sm text-lahella-text2">{p.address||p.location_city||'Lähialue'}</p><p className="mt-1 text-xs text-lahella-muted">{Math.round(p.distance_meters)} m</p></div></div></div>)}</div>}
   <div className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"><span className="text-sm text-lahella-text2">{loading?'Haetaan paikkoja…':`${filtered.length} paikkaa lähialueella`}</span><Link href="/transit" className="rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white">🚌 Lähiliikenne</Link></div>
- </div>
  </section>
 }
