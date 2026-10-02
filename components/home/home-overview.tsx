@@ -55,17 +55,17 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
       </header>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
-          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.member_count}</p>
-          <p className="mt-1 text-xs font-semibold leading-tight text-lahella-text sm:text-sm">Liittynyttä lähialueella</p>
+        <div className="rounded-2xl border border-border bg-card p-2.5 sm:p-3">
+          <p className="text-xl font-semibold text-terracotta sm:text-2xl">{data.member_count}</p>
+          <p className="mt-0.5 text-[0.7rem] font-semibold leading-tight text-lahella-text sm:text-xs">Liittynyttä lähialueella</p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
-          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.listing_count}</p>
-          <p className="mt-1 text-xs font-semibold leading-tight text-lahella-text sm:text-sm">Aktiivista ilmoitusta</p>
+        <div className="rounded-2xl border border-border bg-card p-2.5 sm:p-3">
+          <p className="text-xl font-semibold text-terracotta sm:text-2xl">{data.listing_count}</p>
+          <p className="mt-0.5 text-[0.7rem] font-semibold leading-tight text-lahella-text sm:text-xs">Naapuruston julkaisuja</p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
-          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.event_count}</p>
-          <p className="mt-1 text-xs font-semibold leading-tight text-lahella-text sm:text-sm">Tulevaa tapahtumaa</p>
+        <div className="rounded-2xl border border-border bg-card p-2.5 sm:p-3">
+          <p className="text-xl font-semibold text-terracotta sm:text-2xl">{data.event_count}</p>
+          <p className="mt-0.5 text-[0.7rem] font-semibold leading-tight text-lahella-text sm:text-xs">Tulevaa tapahtumaa</p>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
             <div className="mb-4 flex items-end justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-terracotta">Uutta alueella</p>
-                <h2 className="mt-1 font-serif text-2xl font-semibold text-lahella-text">Viimeisimmät ilmoitukset</h2>
+                <h2 className="mt-1 font-serif text-2xl font-semibold text-lahella-text">Viimeisimmät julkaisut</h2>
               </div>
               <Link href="/listings" className="text-sm font-semibold text-terracotta">Kaikki →</Link>
             </div>
@@ -83,7 +83,7 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
             {data.listings.length === 0 ? (
               <div className="rounded-xl bg-lahella-surface3 p-6 text-center">
                 <div className="text-3xl">🌿</div>
-                <p className="mt-2 font-semibold text-lahella-text">Alueella ei ole vielä ilmoituksia</p>
+                <p className="mt-2 font-semibold text-lahella-text">Alueella ei ole vielä julkaisuja</p>
                 <p className="mt-1 text-sm text-lahella-text2">Ole ensimmäinen, joka julkaisee jotain lähialueelle.</p>
                 <Link href="/create/listing?type=play" className="mt-4 inline-flex rounded-xl bg-terracotta px-4 py-2.5 text-sm font-semibold text-white">
                   Luo ilmoitus
