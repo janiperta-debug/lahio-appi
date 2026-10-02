@@ -253,14 +253,6 @@ export const activity = [
   },
 ]
 
-export const mapPins = [
-  { left: "33%", top: "36%", label: "👩 Sari K. · 0.4km", variant: "terra" as const },
-  { left: "48%", top: "55%", label: "👨 Mikko L. · 0.8km", variant: "terra" as const },
-  { left: "55%", top: "38%", label: "👴 Erkki V. · apua", variant: "sage" as const },
-  { left: "28%", top: "62%", label: "👩‍🦱 Anna M. · 1.5km", variant: "terra" as const },
-  { left: "65%", top: "28%", label: "📅 Kävelykerho", variant: "sage" as const },
-  { left: "70%", top: "60%", label: "🐕 Jukka P. · 2.8km", variant: "terra" as const },
-]
 
 export const browseFilters = ["Kaikki", "🧒 Leikkikaverit", "🤝 Apua tarjolla", "🌱 Harrastukset", "👴 Seniorit", "🐕 Lemmikkejä"]
 export const eventFilters = ["Kaikki", "🧒 Lapsille", "🚶 Liikunta", "🎨 Kulttuuri", "☕ Kokoontuminen"]
