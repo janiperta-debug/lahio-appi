@@ -69,62 +69,16 @@ export function HomeOverview({ data }: { data: HomeOverviewData }) {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
-        <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-terracotta">Uutta alueella</p>
-          <div className="mt-1 flex items-baseline gap-3">
-            <h2 className="font-serif text-2xl font-semibold text-lahella-text">Julkaisut</h2>
-            <span className="text-sm text-lahella-text2">{data.listing_count} alueella</span>
-          </div>
-          {data.listings.length > 0 && (
-            <div className="mt-4 space-y-2">
-              {data.listings.slice(0, 3).map((item) => (
-                <div key={item.type + item.id} className="flex gap-3 rounded-xl border border-border p-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-terracotta-faint text-base">
-                    {listingIcon(item)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-lahella-text">{item.title}</span>
-                      <span className="rounded-full bg-lahella-surface3 px-2 py-0.5 text-[0.65rem] font-semibold text-lahella-text2">
-                        {listingLabel(item)}
-                      </span>
-                    </div>
-                    <p className="mt-1 line-clamp-1 text-sm text-lahella-text2">{item.description}</p>
-                    <p className="mt-1 text-xs text-lahella-muted">{item.display_name || "Naapuri"} · {relativeTime(item.created_at)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+      <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-3">
+        <div className="self-start rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <p className="text-2xl font-semibold text-terracotta sm:text-3xl">{data.listing_count}</p>
+          <p className="mt-1 text-sm font-semibold leading-tight text-lahella-text sm:text-base">Naapuruston julkaisuja</p>
+        </div>
 
-        <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-sage">Kalenterissa</p>
-          <div className="mt-1 flex items-baseline gap-3">
-            <h2 className="font-serif text-2xl font-semibold text-lahella-text">Tapahtumat</h2>
-            <span className="text-sm text-lahella-text2">{data.event_count} tulossa</span>
-          </div>
-          {data.events.length > 0 && (
-            <div className="mt-4 space-y-2">
-              {data.events.slice(0, 3).map((event: HomeEvent) => (
-                <div key={event.id} className="rounded-xl border border-border p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <span className="text-xs font-semibold text-sage">{event.category || "Tapahtuma"}</span>
-                      <h3 className="mt-1 font-semibold text-lahella-text">{event.title}</h3>
-                    </div>
-                    <span className="shrink-0 text-xs font-semibold text-lahella-muted">{eventTime(event.starts_at)}</span>
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-lahella-text2">
-                    {event.location_address && <span>📍 {event.location_address}</span>}
-                    <span>👥 {event.participant_count}{event.max_participants ? ` / ${event.max_participants}` : ""}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        <div className="self-start rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <p className="text-2xl font-semibold text-sage sm:text-3xl">{data.event_count}</p>
+          <p className="mt-1 text-sm font-semibold leading-tight text-lahella-text sm:text-base">Tulevaa tapahtumaa</p>
+        </div>
       </div>
       <div className="mt-6">
         <TransitHomeCard />
