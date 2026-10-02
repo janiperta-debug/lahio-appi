@@ -1,6 +1,4 @@
-'use client'
-
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -54,29 +52,38 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
  const [loading,setLoading]=useState(true)
  const [error,setError]=useState('')
  const supabase=useMemo(()=>createClient(),[])
+ const mapRequestInFlight=useRef(false)
 
  useEffect(()=>{
    let cancelled=false
    let lastFetched:Center|null=null
 
    const loadAt=async(lat:number,lon:number)=>{
-     if(cancelled)return
+     if(cancelled || mapRequestInFlight.current)return
+     mapRequestInFlight.current=true
      setLoading(true)
      setError('')
      try{
-       const {data,error:invokeError}=await supabase.functions.invoke('map-places',{
-         body:{lat,lon,radiusKm:10,category:cat},
+       const params=new URLSearchParams({
+         lat:String(lat),
+         lon:String(lon),
+         radius_km:'10',
+         category:cat,
        })
-       if(invokeError) throw invokeError
-       if(data?.error) throw new Error(data.error)
+       const response=await fetch(`/api/map-places?${params.toString()}`,{
+         method:'GET',
+         cache:'no-store',
+       })
+       const data=await response.json().catch(()=>null)
+       if(!response.ok) throw new Error(data?.error||'Karttapaikkojen haku epäonnistui.')
        if(cancelled)return
        setPlaces(data?.places??[])
-       if(data?.refreshError) setError(`Paikkojen päivitys epäonnistui: ${data.refreshError}`)
        setCenter(data?.center??{latitude:lat,longitude:lon})
        lastFetched={latitude:lat,longitude:lon}
      }catch(e){
        if(!cancelled)setError(e instanceof Error?e.message:'Karttapaikkojen haku epäonnistui.')
      }finally{
+       mapRequestInFlight.current=false
        if(!cancelled)setLoading(false)
      }
    }
@@ -126,5 +133,6 @@ export function MapView({places:initialPlaces,initialCenter}:{places:Place[];ini
   {view==='map'?<div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"><iframe title="Lähialueen kartta" className="h-[520px] w-full border-0" srcDoc={mapHtml(filtered,center)} /></div>:
   <div className="grid gap-3 md:grid-cols-2">{filtered.map(p=><div key={p.id} className="rounded-2xl border border-border bg-card p-4"><div className="flex gap-3"><span className="text-2xl">{emoji[p.category]||'📍'}</span><div><h2 className="font-semibold text-lahella-text">{p.name}</h2><p className="mt-1 text-sm text-lahella-text2">{p.address||p.location_city||'Lähialue'}</p><p className="mt-1 text-xs text-lahella-muted">{Math.round(p.distance_meters)} m</p></div></div></div>)}</div>}
   <div className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"><span className="text-sm text-lahella-text2">{loading?'Haetaan paikkoja…':`${filtered.length} paikkaa lähialueella`}</span><Link href="/transit" className="rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white">🚌 Lähiliikenne</Link></div>
+ </div>
  </section>
 }
