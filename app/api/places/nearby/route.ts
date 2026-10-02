@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-const OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+const OVERPASS_URLS = [
+  "https://overpass.private.coffee/api/interpreter",
+  "https://overpass-api.de/api/interpreter",
+]
 
 function distance(a: number, b: number, c: number, d: number) {
   const R = 6371000
@@ -49,20 +52,44 @@ export async function GET(req: NextRequest) {
 out center tags;`
 
   try {
-    const res = await fetch(OVERPASS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Lahella/1.0 (https://www.janope.fi/)",
-        "Accept": "application/json",
-      },
-      body: new URLSearchParams({ data: query }),
-      cache: "no-store",
-    })
+    let json: any = null
+    let lastStatus = 502
 
-    if (!res.ok) return NextResponse.json({ error: "Paikkatietopalvelu hylkäsi pyynnön.", details: `HTTP ${res.status}` }, { status: 502 })
+    for (const endpoint of OVERPASS_URLS) {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 8000)
 
-    const json = await res.json()
+      try {
+        const url = new URL(endpoint)
+        url.searchParams.set("data", query)
+
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            "User-Agent": "Lahella/1.0 (https://www.janope.fi/)",
+            "Accept": "application/json",
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        })
+
+        lastStatus = res.status
+        if (res.ok) {
+          json = await res.json()
+          break
+        }
+      } finally {
+        clearTimeout(timeout)
+      }
+    }
+
+    if (!json) {
+      return NextResponse.json(
+        { error: "Paikkatietopalvelu ei vastannut.", details: `HTTP ${lastStatus}` },
+        { status: 502 },
+      )
+    }
+
     const seen = new Set<string>()
 
     const places = (json.elements ?? [])
